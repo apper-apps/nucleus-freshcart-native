@@ -7,6 +7,7 @@ import Badge from "@/components/atoms/Badge";
 import QuantitySelector from "@/components/molecules/QuantitySelector";
 import ProductCard from "@/components/molecules/ProductCard";
 import Loading from "@/components/ui/Loading";
+import Product360Viewer from "@/components/molecules/Product360Viewer";
 import Error from "@/components/ui/Error";
 import productService from "@/services/api/productService";
 import useCart from "@/hooks/useCart";
@@ -127,37 +128,12 @@ const ProductDetail = () => {
             animate={{ opacity: 1, x: 0 }}
             className="space-y-4"
           >
-            {/* Main Image */}
-            <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
-              <img
-                src={product.images?.[selectedImageIndex] || "/placeholder-product.jpg"}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Thumbnail Images */}
-            {product.images && product.images.length > 1 && (
-              <div className="flex space-x-2">
-                {product.images.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImageIndex(index)}
-                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                      selectedImageIndex === index
-                        ? "border-primary-500"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+{/* 360° Product Viewer */}
+            <Product360Viewer
+              images={product.images}
+              productName={product.name}
+              className="w-full"
+            />
           </motion.div>
 
           {/* Product Info */}

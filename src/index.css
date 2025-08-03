@@ -43,6 +43,45 @@
   }
 }
 
+/* 360° Product Viewer Styles */
+.product-360-viewer {
+  @apply relative select-none;
+}
+
+.product-360-viewer img {
+  @apply transition-opacity duration-100 ease-out;
+}
+
+.product-360-rotating {
+  @apply pointer-events-none;
+}
+
+.product-360-drag-hint {
+  @apply absolute inset-0 flex items-center justify-center pointer-events-none;
+  @apply bg-black/5 backdrop-blur-sm;
+}
+
+.product-360-controls {
+  @apply absolute bottom-4 left-1/2 transform -translate-x-1/2;
+  @apply bg-black/70 backdrop-blur-sm rounded-full px-3 py-1;
+}
+
+.product-360-progress {
+  @apply flex space-x-1;
+}
+
+.product-360-dot {
+  @apply w-1 h-1 rounded-full transition-all duration-200;
+}
+
+.product-360-dot.active {
+  @apply bg-white scale-125;
+}
+
+.product-360-dot.inactive {
+  @apply bg-white/30;
+}
+
 /* Toast Styling */
 .Toastify__toast-container {
   @apply top-4 right-4;
