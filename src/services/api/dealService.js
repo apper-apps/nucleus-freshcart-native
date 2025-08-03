@@ -6,7 +6,9 @@ class DealService {
     await this.delay(300);
     return dealsData.map(deal => ({
       ...deal,
-      products: productsData.filter(p => deal.productIds.includes(p.Id))
+      products: this.enhanceProductsWithTieredPricing(
+        productsData.filter(p => deal.productIds.includes(p.Id))
+      )
     }));
   }
 
@@ -19,7 +21,9 @@ class DealService {
     
     return {
       ...deal,
-      products: productsData.filter(p => deal.productIds.includes(p.Id))
+      products: this.enhanceProductsWithTieredPricing(
+        productsData.filter(p => deal.productIds.includes(p.Id))
+      )
     };
   }
 
@@ -31,8 +35,79 @@ class DealService {
       .sort((a, b) => a.position - b.position)
       .map(deal => ({
         ...deal,
-        products: productsData.filter(p => deal.productIds.includes(p.Id))
+        products: this.enhanceProductsWithTieredPricing(
+          productsData.filter(p => deal.productIds.includes(p.Id))
+        )
       }));
+  }
+
+  async getHotDeals() {
+    await this.delay(200);
+    const now = new Date();
+    const hotDeals = dealsData
+      .filter(deal => {
+        const expiresAt = new Date(deal.expiresAt);
+        const hoursUntilExpiry = (expiresAt - now) / (1000 * 60 * 60);
+        return hoursUntilExpiry <= 24 && hoursUntilExpiry > 0;
+      })
+      .sort((a, b) => new Date(a.expiresAt) - new Date(b.expiresAt))
+      .map(deal => ({
+        ...deal,
+        products: this.enhanceProductsWithTieredPricing(
+          productsData.filter(p => deal.productIds.includes(p.Id))
+        ),
+        urgency: this.calculateUrgency(deal.expiresAt)
+      }));
+    
+    return hotDeals;
+  }
+
+  enhanceProductsWithTieredPricing(products) {
+    return products.map(product => ({
+      ...product,
+      dynamicPricing: this.calculateDynamicPricing(product),
+      stockLevel: this.calculateStockLevel(product),
+      recommendationScore: this.calculateRecommendationScore(product)
+    }));
+  }
+
+  calculateDynamicPricing(product) {
+    if (!product.priceTiers) return null;
+    
+    return product.priceTiers.map(tier => ({
+      ...tier,
+      savings: tier.discountPercentage > 0 ? 
+        Math.round(tier.price / (1 - tier.discountPercentage / 100)) - tier.price : 0,
+      bulkDiscount: tier.minQuantity >= 10 ? 'bulk' : 
+                   tier.minQuantity >= 5 ? 'medium' : 'single'
+    }));
+  }
+
+  calculateStockLevel(product) {
+    // Mock stock calculation with some logic
+    const baseStock = Math.floor(Math.random() * 50) + 10;
+    const demandFactor = product.featured ? 0.7 : 1.0;
+    return Math.max(1, Math.floor(baseStock * demandFactor));
+  }
+
+  calculateRecommendationScore(product) {
+    let score = 0;
+    if (product.featured) score += 30;
+    if (product.priceTiers?.some(tier => tier.discountPercentage > 20)) score += 25;
+    if (product.dietaryTags?.includes('Organic')) score += 15;
+    if (product.inStock) score += 20;
+    return Math.min(100, score + Math.floor(Math.random() * 10));
+  }
+
+  calculateUrgency(expiresAt) {
+    const now = new Date();
+    const expires = new Date(expiresAt);
+    const hoursLeft = Math.max(0, (expires - now) / (1000 * 60 * 60));
+    
+    if (hoursLeft <= 2) return 'critical';
+    if (hoursLeft <= 6) return 'high';
+    if (hoursLeft <= 12) return 'medium';
+    return 'low';
   }
 
   async create(deal) {

@@ -1,17 +1,19 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import dealService from "@/services/api/dealService";
 import ApperIcon from "@/components/ApperIcon";
 import DealCard from "@/components/molecules/DealCard";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-import dealService from "@/services/api/dealService";
+import Button from "@/components/atoms/Button";
 
 const DealsShowcase = () => {
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+  const [showCarousel, setShowCarousel] = useState(false);
   useEffect(() => {
     loadDeals();
   }, []);
@@ -27,6 +29,18 @@ const DealsShowcase = () => {
     } finally {
       setLoading(false);
     }
+};
+
+  const handleCarouselNext = () => {
+    setCurrentCarouselIndex((prev) => 
+      prev + 1 < deals.length ? prev + 1 : 0
+    );
+  };
+
+  const handleCarouselPrev = () => {
+    setCurrentCarouselIndex((prev) => 
+      prev - 1 >= 0 ? prev - 1 : deals.length - 1
+    );
   };
 
   if (loading) {
@@ -88,7 +102,7 @@ const DealsShowcase = () => {
         </motion.div>
 
         {/* Deals Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {deals.map((deal, index) => (
             <DealCard
               key={deal.Id}
@@ -96,7 +110,46 @@ const DealsShowcase = () => {
               index={index}
             />
           ))}
-        </div>
+</div>
+
+        {/* Carousel View for Extended Deals */}
+        {showCarousel && (
+          <div className="mt-8 bg-gradient-to-r from-primary-50 to-accent-50 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold gradient-text">More Great Deals</h3>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCarouselPrev}
+                  className="rounded-full w-10 h-10 p-0"
+                >
+                  <ApperIcon name="ChevronLeft" className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCarouselNext}
+                  className="rounded-full w-10 h-10 p-0"
+                >
+                  <ApperIcon name="ChevronRight" className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="overflow-hidden">
+              <motion.div
+                className="flex transition-transform duration-300"
+                style={{ transform: `translateX(-${currentCarouselIndex * 100}%)` }}
+              >
+                {deals.map((deal, index) => (
+                  <div key={deal.Id} className="w-full flex-shrink-0">
+                    <DealCard deal={deal} index={index} />
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
