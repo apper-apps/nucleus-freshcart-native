@@ -68,7 +68,7 @@ const ProductCard = ({ product, index = 0 }) => {
       </div>
 
       {/* Product Info */}
-      <div className="p-4 space-y-3">
+<div className="p-4 space-y-3">
         <div>
           <h3 className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2">
             {product.name}
@@ -76,6 +76,29 @@ const ProductCard = ({ product, index = 0 }) => {
           <p className="text-sm text-gray-600 mt-1 line-clamp-2">
             {product.description}
           </p>
+          
+          {/* Dietary Tags */}
+          {product.dietaryTags && product.dietaryTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {product.dietaryTags.slice(0, 3).map((tag) => (
+                <Badge
+                  key={tag}
+                  variant="secondary"
+                  className="text-xs px-2 py-0.5 bg-gradient-to-r from-accent-50 to-accent-100 text-accent-700 border border-accent-200"
+                >
+                  {tag}
+                </Badge>
+              ))}
+              {product.dietaryTags.length > 3 && (
+                <Badge
+                  variant="secondary"
+                  className="text-xs px-2 py-0.5 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-600 border border-gray-200"
+                >
+                  +{product.dietaryTags.length - 3}
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Price and Stock */}

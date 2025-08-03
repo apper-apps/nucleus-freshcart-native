@@ -15,7 +15,8 @@
     ],
     "inStock": true,
     "featured": true,
-    "dealId": "deal1"
+    "dealId": "deal1",
+    "dietaryTags": ["Vegan", "Gluten-Free", "Organic", "Halal"]
   },
   {
     "Id": 2,
@@ -32,7 +33,8 @@
     ],
     "inStock": true,
     "featured": false,
-    "dealId": "deal1"
+    "dealId": "deal1",
+    "dietaryTags": ["Vegan", "Gluten-Free", "Halal"]
   },
   {
     "Id": 3,
@@ -49,7 +51,8 @@
     ],
     "inStock": true,
     "featured": true,
-    "dealId": null
+    "dealId": null,
+    "dietaryTags": ["Vegetarian", "Gluten-Free", "Halal"]
   },
   {
     "Id": 4,
@@ -66,7 +69,8 @@
     ],
     "inStock": true,
     "featured": false,
-    "dealId": "deal2"
+    "dealId": "deal2",
+    "dietaryTags": ["Vegan", "Gluten-Free", "Organic", "Halal"]
   },
   {
     "Id": 5,
@@ -83,7 +87,8 @@
     ],
     "inStock": true,
     "featured": true,
-    "dealId": "deal2"
+    "dealId": "deal2",
+    "dietaryTags": ["Vegan", "Gluten-Free", "Halal"]
   },
   {
     "Id": 6,
@@ -100,7 +105,8 @@
     ],
     "inStock": true,
     "featured": false,
-    "dealId": null
+    "dealId": null,
+    "dietaryTags": ["Vegan", "Halal"]
   },
   {
     "Id": 7,
@@ -117,7 +123,8 @@
     ],
     "inStock": true,
     "featured": true,
-    "dealId": "deal3"
+    "dealId": "deal3",
+    "dietaryTags": ["Vegetarian", "Gluten-Free", "Organic", "Halal"]
   },
   {
     "Id": 8,
@@ -134,7 +141,8 @@
     ],
     "inStock": true,
     "featured": false,
-    "dealId": "deal3"
+    "dealId": "deal3",
+    "dietaryTags": ["Gluten-Free", "Halal"]
   },
   {
     "Id": 9,
@@ -151,7 +159,8 @@
     ],
     "inStock": true,
     "featured": true,
-    "dealId": null
+    "dealId": null,
+    "dietaryTags": ["Vegetarian", "Halal"]
   },
   {
     "Id": 10,
@@ -168,7 +177,8 @@
     ],
     "inStock": true,
     "featured": false,
-    "dealId": "deal4"
+    "dealId": "deal4",
+    "dietaryTags": ["Vegan", "Gluten-Free", "Halal"]
   },
   {
     "Id": 11,
@@ -185,7 +195,8 @@
     ],
     "inStock": true,
     "featured": true,
-    "dealId": "deal4"
+    "dealId": "deal4",
+    "dietaryTags": ["Vegetarian", "Halal"]
   },
   {
     "Id": 12,
@@ -202,6 +213,7 @@
     ],
     "inStock": true,
     "featured": false,
-    "dealId": "deal1"
+    "dealId": "deal1",
+    "dietaryTags": ["Vegan", "Gluten-Free", "Organic", "Halal"]
   }
 ]

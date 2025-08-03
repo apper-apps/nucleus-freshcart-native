@@ -144,7 +144,7 @@ const ProductDetail = () => {
           >
             {/* Header */}
             <div>
-              <div className="flex items-center space-x-2 mb-2">
+<div className="flex items-center space-x-2 mb-2">
                 <Badge variant="default">{product.category}</Badge>
                 {product.featured && (
                   <Badge variant="secondary">
@@ -153,6 +153,22 @@ const ProductDetail = () => {
                   </Badge>
                 )}
               </div>
+              
+              {/* Dietary Tags */}
+              {product.dietaryTags && product.dietaryTags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {product.dietaryTags.map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      className="px-3 py-1 bg-gradient-to-r from-accent-50 to-accent-100 text-accent-700 border border-accent-200"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {product.name}
               </h1>
