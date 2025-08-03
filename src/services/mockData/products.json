@@ -4,8 +4,8 @@
     "name": "Organic Tomatoes",
     "category": "Vegetables",
     "images": [
-      "https://images.unsplash.com/photo-1546470427-e26264fbbea0?w=400",
-      "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400"
+      "https://picsum.photos/400/300?random=1",
+      "https://picsum.photos/400/300?random=2"
     ],
     "description": "Fresh organic tomatoes, locally grown and pesticide-free. Perfect for salads, cooking, and sauces.",
     "priceTiers": [
@@ -22,7 +22,7 @@
     "name": "Fresh Basil",
     "category": "Vegetables",
     "images": [
-      "https://images.unsplash.com/photo-1618164436241-4473940d1f5c?w=400"
+      "https://picsum.photos/400/300?random=3"
     ],
     "description": "Aromatic fresh basil leaves, perfect for Italian dishes and garnishing.",
     "priceTiers": [
@@ -39,7 +39,7 @@
     "name": "Premium Milk",
     "category": "Milk",
     "images": [
-      "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400"
+      "https://picsum.photos/400/300?random=4"
     ],
     "description": "Fresh whole milk from grass-fed cows, rich in nutrients and flavor.",
     "priceTiers": [
@@ -56,7 +56,7 @@
     "name": "Organic Bananas",
     "category": "Fruits",
     "images": [
-      "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400"
+      "https://picsum.photos/400/300?random=5"
     ],
     "description": "Sweet organic bananas, perfect for smoothies, baking, or snacking.",
     "priceTiers": [
@@ -73,7 +73,7 @@
     "name": "Fresh Strawberries",
     "category": "Fruits",
     "images": [
-      "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400"
+      "https://picsum.photos/400/300?random=6"
     ],
     "description": "Juicy red strawberries, handpicked and farm-fresh.",
     "priceTiers": [
@@ -90,7 +90,7 @@
     "name": "Whole Grain Bread",
     "category": "Groceries",
     "images": [
-      "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400"
+      "https://picsum.photos/400/300?random=7"
     ],
     "description": "Freshly baked whole grain bread, rich in fiber and nutrients.",
     "priceTiers": [
@@ -107,7 +107,7 @@
     "name": "Organic Eggs",
     "category": "Groceries",
     "images": [
-      "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400"
+      "https://picsum.photos/400/300?random=8"
     ],
     "description": "Farm-fresh organic eggs from free-range chickens.",
     "priceTiers": [
@@ -124,7 +124,7 @@
     "name": "Premium Ground Beef",
     "category": "Meat",
     "images": [
-      "https://images.unsplash.com/photo-1588347818375-6e7c55a73d91?w=400"
+      "https://picsum.photos/400/300?random=9"
     ],
     "description": "High-quality ground beef, perfect for burgers, meatballs, and cooking.",
     "priceTiers": [
@@ -141,7 +141,7 @@
     "name": "Margherita Pizza",
     "category": "Pizza",
     "images": [
-      "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400"
+      "https://picsum.photos/400/300?random=10"
     ],
     "description": "Classic Margherita pizza with fresh mozzarella, tomatoes, and basil.",
     "priceTiers": [
@@ -158,7 +158,7 @@
     "name": "Orange Juice",
     "category": "Drinks",
     "images": [
-      "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400"
+      "https://picsum.photos/400/300?random=11"
     ],
     "description": "Freshly squeezed orange juice, no added sugar or preservatives.",
     "priceTiers": [
@@ -175,7 +175,7 @@
     "name": "Caesar Salad",
     "category": "Ready-to-Eat",
     "images": [
-      "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400"
+      "https://picsum.photos/400/300?random=12"
     ],
     "description": "Fresh Caesar salad with crisp romaine, parmesan, and croutons.",
     "priceTiers": [
@@ -192,7 +192,7 @@
     "name": "Organic Carrots",
     "category": "Vegetables",
     "images": [
-      "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400"
+      "https://picsum.photos/400/300?random=13"
     ],
     "description": "Fresh organic carrots, sweet and crunchy, perfect for cooking or snacking.",
     "priceTiers": [
