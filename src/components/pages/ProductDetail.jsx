@@ -24,8 +24,8 @@ const [product, setProduct] = useState(null);
   const [selectedTier, setSelectedTier] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 34, seconds: 56 });
+  const [urgencyLevel, setUrgencyLevel] = useState('normal');
   const { addToCart } = useCart();
-
 useEffect(() => {
     if (id) {
       loadProduct();
@@ -207,7 +207,7 @@ const handleAddToCart = () => {
               {/* Dietary Tags */}
 {product.dietaryTags && product.dietaryTags.length > 0 && (
                 <motion.div 
-                  className="flex flex-wrap gap-2 mb-4"
+                  className="flex flex-wrap gap-2 mb-6"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
@@ -218,10 +218,11 @@ const handleAddToCart = () => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.1 * index }}
+                      whileHover={{ scale: 1.05 }}
                     >
                       <Badge
                         variant={getDietaryBadgeVariant(tag)}
-                        className="px-3 py-1 font-medium"
+                        className="px-4 py-2 font-semibold text-sm shadow-md hover:shadow-lg transition-shadow"
                       >
                         {tag}
                       </Badge>
@@ -230,65 +231,130 @@ const handleAddToCart = () => {
                 </motion.div>
               )}
               
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
                 {product.name}
               </h1>
-              <p className="text-gray-600">
+              <p className="text-lg text-gray-600 leading-relaxed">
                 {product.description}
               </p>
             </div>
 
-            {/* Stock Status */}
-<div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
+{/* Enhanced Stock Status */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
                 {product.inStock ? (
                   <motion.div 
-                    className={`flex items-center space-x-2 ${isVeryLowStock ? 'text-red-600' : isLowStock ? 'text-orange-600' : 'text-green-600'}`}
-                    animate={isVeryLowStock ? { scale: [1, 1.05, 1] } : {}}
-                    transition={{ duration: 1, repeat: Infinity }}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl ${
+                      isVeryLowStock 
+                        ? 'bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200' 
+                        : isLowStock 
+                        ? 'bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-200' 
+                        : 'bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-200'
+                    }`}
+                    animate={isVeryLowStock ? { 
+                      scale: [1, 1.02, 1],
+                      boxShadow: [
+                        "0 0 0 0 rgba(239, 68, 68, 0.7)",
+                        "0 0 0 10px rgba(239, 68, 68, 0)",
+                        "0 0 0 0 rgba(239, 68, 68, 0)"
+                      ]
+                    } : {}}
+                    transition={{ duration: 1.5, repeat: Infinity }}
                   >
-                    <ApperIcon name="CheckCircle" className={`h-5 w-5 ${isVeryLowStock ? 'text-red-500' : isLowStock ? 'text-orange-500' : 'text-green-500'}`} />
-                    <span className="font-medium">
-                      {isVeryLowStock ? `Only ${stockLeft} left - Order now!` : isLowStock ? `${stockLeft} left in stock` : `${stockLeft} available`}
-                    </span>
+                    <ApperIcon 
+                      name={isVeryLowStock ? "AlertTriangle" : "CheckCircle"} 
+                      className={`h-6 w-6 ${
+                        isVeryLowStock ? 'text-red-500' : isLowStock ? 'text-orange-500' : 'text-green-500'
+                      }`} 
+                    />
+                    <div>
+                      <span className={`font-bold text-lg ${
+                        isVeryLowStock ? 'text-red-700' : isLowStock ? 'text-orange-700' : 'text-green-700'
+                      }`}>
+                        {isVeryLowStock 
+                          ? `Only ${stockLeft} left!` 
+                          : isLowStock 
+                          ? `${stockLeft} left in stock` 
+                          : `${stockLeft} available`
+                        }
+                      </span>
+                      {isVeryLowStock && (
+                        <p className="text-sm text-red-600 font-medium">Order now before it's gone!</p>
+                      )}
+                    </div>
                   </motion.div>
                 ) : (
-                  <>
-                    <ApperIcon name="XCircle" className="h-5 w-5 text-red-500" />
-                    <span className="text-red-700 font-medium">Out of Stock</span>
-                  </>
+                  <div className="flex items-center space-x-3 px-4 py-3 bg-gray-100 rounded-xl border-2 border-gray-200">
+                    <ApperIcon name="XCircle" className="h-6 w-6 text-red-500" />
+                    <span className="text-red-700 font-bold text-lg">Out of Stock</span>
+                  </div>
                 )}
               </div>
-              {product.trending && (
-                <Badge variant="trending" className="px-3 py-1">
-                  🔥 Trending Now
-                </Badge>
-              )}
+              
+              <div className="flex items-center space-x-2">
+                {product.trending && (
+                  <motion.div
+                    animate={{ y: [0, -2, 0] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  >
+                    <Badge variant="trending" className="px-4 py-2 text-sm font-bold shadow-lg">
+                      🔥 Trending Now
+                    </Badge>
+                  </motion.div>
+                )}
+              </div>
             </div>
 
             {/* Limited Time Offer Countdown */}
-            {product.dealId && (
+{product.dealId && (
               <motion.div 
-                className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-lg p-4 mt-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-br from-red-50 via-orange-50 to-red-100 border-2 border-red-200 rounded-2xl p-6 mt-6 shadow-lg"
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: 0.4 }}
+                whileHover={{ scale: 1.02 }}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <ApperIcon name="Clock" className="h-5 w-5 text-red-600" />
-                    <span className="font-semibold text-red-800">Limited Time Offer!</span>
+                <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                  <div className="flex items-center space-x-3">
+                    <motion.div
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    >
+                      <ApperIcon name="Clock" className="h-7 w-7 text-red-600" />
+                    </motion.div>
+                    <div>
+                      <span className="font-bold text-xl text-red-800">Limited Time Offer!</span>
+                      <p className="text-sm text-red-600">Don't miss out on this amazing deal</p>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
-                      {String(timeLeft.hours).padStart(2, '0')}h
-                    </div>
-                    <div className="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
-                      {String(timeLeft.minutes).padStart(2, '0')}m
-                    </div>
-                    <div className="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
-                      {String(timeLeft.seconds).padStart(2, '0')}s
-                    </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    <motion.div 
+                      className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-xl shadow-md"
+                      animate={{ boxShadow: ["0 4px 15px rgba(239, 68, 68, 0.3)", "0 6px 20px rgba(239, 68, 68, 0.4)", "0 4px 15px rgba(239, 68, 68, 0.3)"] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <div className="text-2xl font-bold">{String(timeLeft.hours).padStart(2, '0')}</div>
+                      <div className="text-xs font-medium opacity-90">Hours</div>
+                    </motion.div>
+                    <div className="text-2xl font-bold text-red-600">:</div>
+                    <motion.div 
+                      className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-xl shadow-md"
+                      animate={{ boxShadow: ["0 4px 15px rgba(239, 68, 68, 0.3)", "0 6px 20px rgba(239, 68, 68, 0.4)", "0 4px 15px rgba(239, 68, 68, 0.3)"] }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+                    >
+                      <div className="text-2xl font-bold">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                      <div className="text-xs font-medium opacity-90">Minutes</div>
+                    </motion.div>
+                    <div className="text-2xl font-bold text-red-600">:</div>
+                    <motion.div 
+                      className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-xl shadow-md"
+                      animate={{ boxShadow: ["0 4px 15px rgba(239, 68, 68, 0.3)", "0 6px 20px rgba(239, 68, 68, 0.4)", "0 4px 15px rgba(239, 68, 68, 0.3)"] }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
+                    >
+                      <div className="text-2xl font-bold">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                      <div className="text-xs font-medium opacity-90">Seconds</div>
+                    </motion.div>
                   </div>
                 </div>
               </motion.div>
@@ -364,46 +430,121 @@ const handleAddToCart = () => {
           </motion.section>
         )}
 
-        {/* Frequently Bought Together Section */}
+{/* Enhanced Frequently Bought Together Section */}
         {frequentlyBoughtWith.length > 0 && (
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mb-12"
+            className="mb-16"
           >
-            <div className="flex items-center space-x-2 mb-6">
-              <ApperIcon name="Users" className="h-6 w-6 text-primary-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Frequently Bought Together</h2>
-            </div>
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <motion.div 
+              className="flex items-center justify-center space-x-3 mb-8"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6 }}
+            >
+              <ApperIcon name="Users" className="h-8 w-8 text-primary-600" />
+              <h2 className="text-3xl md:text-4xl font-bold gradient-text text-center">
+                Frequently Bought Together
+              </h2>
+              <ApperIcon name="ShoppingBag" className="h-8 w-8 text-primary-600" />
+            </motion.div>
+            
+            <motion.div 
+              className="bg-gradient-to-br from-blue-50 via-purple-50 to-blue-100 rounded-3xl p-8 border-2 border-blue-200 shadow-xl relative overflow-hidden"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full blur-2xl" />
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-br from-purple-400 to-blue-400 rounded-full blur-2xl" />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
                 {frequentlyBoughtWith.map((item, index) => (
                   <motion.div
                     key={item.Id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * index }}
-                    className="bg-white rounded-lg p-4 border border-blue-200 hover:shadow-md transition-shadow"
+                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ delay: 0.1 * index + 0.7, type: "spring", stiffness: 100 }}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                    className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 border-2 border-blue-200 hover:border-blue-300 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    <div className="flex items-center space-x-3">
-                      <img
-                        src={item.images?.[0] || "/placeholder-product.jpg"}
-                        alt={item.name}
-                        className="w-12 h-12 object-cover rounded-lg"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 truncate">{item.name}</h4>
-                        <p className="text-primary-600 font-semibold">Rs.{item.priceTiers?.[0]?.price.toFixed(2)}</p>
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="relative">
+                        <img
+                          src={item.images?.[0] || "/placeholder-product.jpg"}
+                          alt={item.name}
+                          className="w-20 h-20 object-cover rounded-2xl shadow-md"
+                        />
+                        <div className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">
+                          {index + 1}
+                        </div>
                       </div>
+                      <div className="space-y-2">
+                        <h4 className="font-bold text-gray-900 text-lg leading-tight">{item.name}</h4>
+                        <div className="flex items-center justify-center space-x-2">
+                          <span className="text-2xl font-bold text-primary-600">
+                            Rs.{item.priceTiers?.[0]?.price.toFixed(2)}
+                          </span>
+                          {item.priceTiers?.[0]?.discountPercentage > 0 && (
+                            <Badge variant="discount" className="text-xs">
+                              {item.priceTiers[0].discountPercentage}% OFF
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => navigate(`/product/${item.Id}`)}
+                      >
+                        <ApperIcon name="Eye" className="h-4 w-4 mr-2" />
+                        View Product
+                      </Button>
                     </div>
+                    
+                    {/* Plus connector for desktop */}
+                    {index < frequentlyBoughtWith.length - 1 && (
+                      <div className="hidden md:block absolute -right-4 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold z-10">
+                        +
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </div>
-              <div className="mt-4 text-center">
-                <p className="text-blue-700 font-medium">Customers who bought this item also purchased these products</p>
-              </div>
-            </div>
+              
+              <motion.div 
+                className="mt-8 text-center space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <ApperIcon name="TrendingUp" className="h-5 w-5 text-blue-600" />
+                  <p className="text-lg font-semibold text-blue-800">
+                    95% of customers who bought this item also purchased these products
+                  </p>
+                </div>
+                <div className="flex items-center justify-center space-x-4 text-sm text-blue-600">
+                  <div className="flex items-center space-x-1">
+                    <ApperIcon name="Star" className="h-4 w-4 fill-current" />
+                    <span>Highly Rated Combo</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <ApperIcon name="Truck" className="h-4 w-4" />
+                    <span>Free Delivery</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <ApperIcon name="Clock" className="h-4 w-4" />
+                    <span>Save Time</span>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
           </motion.section>
         )}
       </div>

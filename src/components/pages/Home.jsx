@@ -2,12 +2,14 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import DealsShowcase from "@/components/organisms/DealsShowcase";
 import FeaturedProducts from "@/components/organisms/FeaturedProducts";
+import TrendingSection from "@/components/organisms/TrendingSection";
 import CategoryNav from "@/components/molecules/CategoryNav";
 import ProductCard from "@/components/molecules/ProductCard";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
 import productService from "@/services/api/productService";
+
 const Home = () => {
   return (
     <div className="min-h-screen">
@@ -98,7 +100,9 @@ const Home = () => {
       {/* Featured Products */}
 <FeaturedProducts />
 
-      {/* Hot Deals Section */}
+      {/* Trending Section */}
+      <TrendingSection />
+{/* Hot Deals Section */}
       <section className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -115,21 +119,53 @@ const Home = () => {
             Limited time offers that won't last long
           </p>
           
-          {/* Countdown Timer */}
-          <div className="flex items-center justify-center space-x-4 mt-6">
-            <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg">
-              <div className="text-2xl font-bold">12</div>
-              <div className="text-xs">Hours</div>
-            </div>
-            <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg">
-              <div className="text-2xl font-bold">34</div>
-              <div className="text-xs">Minutes</div>
-            </div>
-            <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg">
-              <div className="text-2xl font-bold">56</div>
-              <div className="text-xs">Seconds</div>
-            </div>
-          </div>
+          {/* Enhanced Countdown Timer */}
+          <motion.div 
+            className="flex items-center justify-center space-x-4 mt-6"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <motion.div 
+              className="bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white px-6 py-4 rounded-xl shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              animate={{ y: [0, -2, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <div className="text-3xl font-bold">12</div>
+              <div className="text-xs font-medium opacity-90">Hours</div>
+            </motion.div>
+            <motion.div 
+              className="bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white px-6 py-4 rounded-xl shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              animate={{ y: [0, -2, 0] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+            >
+              <div className="text-3xl font-bold">34</div>
+              <div className="text-xs font-medium opacity-90">Minutes</div>
+            </motion.div>
+            <motion.div 
+              className="bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white px-6 py-4 rounded-xl shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              animate={{ y: [0, -2, 0] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
+            >
+              <div className="text-3xl font-bold">56</div>
+              <div className="text-xs font-medium opacity-90">Seconds</div>
+            </motion.div>
+          </motion.div>
+          
+          {/* Urgency Message */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mt-6 inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-orange-100 to-red-100 rounded-full border-2 border-red-200"
+          >
+            <ApperIcon name="AlertTriangle" className="h-5 w-5 text-red-600" />
+            <span className="text-red-800 font-semibold">Hurry! Offers expire soon</span>
+            <ApperIcon name="AlertTriangle" className="h-5 w-5 text-red-600" />
+          </motion.div>
         </motion.div>
       </section>
 
