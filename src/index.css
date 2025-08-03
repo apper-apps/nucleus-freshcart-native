@@ -104,5 +104,22 @@
 }
 
 .Toastify__toast--warning {
-  @apply bg-gradient-to-r from-yellow-500 to-yellow-600;
+@apply bg-gradient-to-r from-yellow-500 to-yellow-600;
+}
+
+/* Quantity Discount Styles */
+.quantity-tier-card {
+  @apply transition-all duration-300 hover:shadow-lg;
+}
+
+.quantity-tier-active {
+  @apply ring-2 ring-primary-500 ring-opacity-50 shadow-lg;
+}
+
+.discount-highlight {
+  @apply bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-1 rounded-full text-xs font-bold;
+}
+
+.savings-indicator {
+  @apply animate-pulse bg-gradient-to-r from-green-100 to-emerald-100 border-l-4 border-green-500;
 }

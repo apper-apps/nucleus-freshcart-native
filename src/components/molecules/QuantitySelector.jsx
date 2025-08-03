@@ -80,8 +80,15 @@ const QuantitySelector = ({
       </div>
 
       {/* Price Tiers Display */}
-      <div className="space-y-3">
-        <h4 className="text-sm font-medium text-gray-700">Quantity Discounts:</h4>
+<div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-medium text-gray-700">Quantity Discounts Available:</h4>
+          {selectedTier && selectedTier.discountPercentage > 0 && (
+            <Badge variant="discount" className="animate-pulse">
+              {selectedTier.discountPercentage}% OFF Applied
+            </Badge>
+          )}
+        </div>
         <div className="grid gap-2">
           {priceTiers.map((tier, index) => (
             <motion.div
@@ -105,12 +112,19 @@ const QuantitySelector = ({
                   </Badge>
                 )}
               </div>
-              <div className="text-right">
-                <span className="text-lg font-bold text-primary-600">
-                  Rs.{tier.price.toFixed(2)} each
-                </span>
+<div className="text-right">
+                <div className="flex flex-col items-end">
+                  <span className="text-lg font-bold text-primary-600">
+                    Rs.{tier.price.toFixed(2)} each
+                  </span>
+                  {tier.discountPercentage > 0 && (
+                    <span className="text-sm text-gray-500 line-through">
+                      Rs.{(tier.price / (1 - tier.discountPercentage / 100)).toFixed(2)}
+                    </span>
+                  )}
+                </div>
                 {selectedTier?.minQuantity === tier.minQuantity && (
-                  <div className="text-sm text-primary-600 font-medium">
+                  <div className="text-sm text-primary-600 font-medium mt-1">
                     Total: Rs.{(tier.price * quantity).toFixed(2)}
                   </div>
                 )}
@@ -120,21 +134,60 @@ const QuantitySelector = ({
         </div>
       </div>
 
+{/* Savings Calculator */}
       {selectedTier && selectedTier.discountPercentage > 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-4"
+          className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4"
         >
-          <div className="flex items-center space-x-2">
-            <ApperIcon name="CheckCircle" className="h-5 w-5 text-green-600" />
-            <span className="text-green-800 font-medium">
-              You save Rs.{((priceTiers[0].price - selectedTier.price) * quantity).toFixed(2)} 
-              with this quantity!
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <ApperIcon name="CheckCircle" className="h-5 w-5 text-green-600" />
+              <span className="text-green-800 font-medium">
+                You save Rs.{((priceTiers[0].price - selectedTier.price) * quantity).toFixed(2)} 
+              </span>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-green-700">
+                vs buying {quantity} at regular price
+              </div>
+              <div className="text-xs text-green-600">
+                Regular: Rs.{(priceTiers[0].price * quantity).toFixed(2)}
+              </div>
+            </div>
           </div>
         </motion.div>
       )}
+
+      {/* Next Tier Incentive */}
+      {(() => {
+        const nextTier = priceTiers.find(tier => tier.minQuantity > quantity);
+        if (nextTier) {
+          const additionalNeeded = nextTier.minQuantity - quantity;
+          const additionalSavings = (selectedTier?.price || priceTiers[0].price) - nextTier.price;
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4"
+            >
+              <div className="flex items-center space-x-2">
+                <ApperIcon name="TrendingUp" className="h-5 w-5 text-blue-600" />
+                <div>
+                  <span className="text-blue-800 font-medium">
+                    Buy {additionalNeeded} more to save Rs.{additionalSavings.toFixed(2)} per item
+                  </span>
+                  <div className="text-sm text-blue-600 mt-1">
+                    Next tier: {nextTier.discountPercentage}% OFF at {nextTier.minQuantity}+ items
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        }
+        return null;
+      })()}
     </div>
   );
 };

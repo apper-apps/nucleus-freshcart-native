@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
-import Badge from "@/components/atoms/Badge";
-import QuantitySelector from "@/components/molecules/QuantitySelector";
-import ProductCard from "@/components/molecules/ProductCard";
-import Loading from "@/components/ui/Loading";
-import Product360Viewer from "@/components/molecules/Product360Viewer";
-import Error from "@/components/ui/Error";
 import productService from "@/services/api/productService";
+import ApperIcon from "@/components/ApperIcon";
+import ProductCard from "@/components/molecules/ProductCard";
+import QuantitySelector from "@/components/molecules/QuantitySelector";
+import Product360Viewer from "@/components/molecules/Product360Viewer";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Home from "@/components/pages/Home";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
 import useCart from "@/hooks/useCart";
 
 const ProductDetail = () => {
@@ -146,7 +147,7 @@ const handleAddToCart = () => {
     );
   }
 
-  if (!product) {
+if (!product) {
     return null;
   }
 
@@ -235,11 +236,23 @@ const handleAddToCart = () => {
                 {product.name}
               </h1>
               <p className="text-lg text-gray-600 leading-relaxed">
-                {product.description}
+{product.description}
               </p>
             </div>
 
-{/* Enhanced Stock Status */}
+            {/* Quantity Selector with Tiered Pricing */}
+            {product.priceTiers && product.priceTiers.length > 0 && (
+              <div className="mb-8 p-6 bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl border border-primary-100">
+                <QuantitySelector
+                  priceTiers={product.priceTiers}
+                  initialQuantity={selectedQuantity}
+                  onQuantityChange={setSelectedQuantity}
+                  onTierChange={setCurrentTier}
+                />
+              </div>
+            )}
+
+            {/* Enhanced Stock Status */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-3">
                 {product.inStock ? (
