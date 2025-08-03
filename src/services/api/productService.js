@@ -20,9 +20,22 @@ class ProductService {
     return productsData.filter(p => p.category === category).map(p => ({ ...p }));
   }
 
-  async getFeatured() {
+async getFeatured() {
     await this.delay(200);
-    return productsData.filter(p => p.featured).map(p => ({ ...p }));
+    const featured = productsData.filter(p => p.featured).map(p => ({ ...p }));
+    // Sort by featuredOrder if it exists, otherwise by Id
+    return featured.sort((a, b) => (a.featuredOrder || a.Id) - (b.featuredOrder || b.Id));
+  }
+
+  async setFeaturedOrder(productIds) {
+    await this.delay(300);
+    productIds.forEach((id, index) => {
+      const product = productsData.find(p => p.Id === parseInt(id));
+      if (product && product.featured) {
+        product.featuredOrder = index + 1;
+      }
+    });
+    return true;
   }
 
   async search(query, category = null) {
@@ -68,13 +81,14 @@ class ProductService {
     return sameCategory;
   }
 
-  async create(product) {
+async create(product) {
     await this.delay(300);
     const newProduct = {
       ...product,
       Id: Math.max(...productsData.map(p => p.Id)) + 1,
       inStock: true,
-      featured: false,
+      featured: product.featured || false,
+      featuredOrder: product.featured ? (Math.max(...productsData.filter(p => p.featured).map(p => p.featuredOrder || 0)) + 1) : null,
       dealId: null
     };
     productsData.push(newProduct);

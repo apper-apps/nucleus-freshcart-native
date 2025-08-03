@@ -4,13 +4,16 @@ import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 import AdminProductForm from "@/components/organisms/AdminProductForm";
 import AdminProductList from "@/components/organisms/AdminProductList";
+import FeaturedCarouselManager from "@/components/organisms/FeaturedCarouselManager";
+import FeaturedProducts from "@/components/organisms/FeaturedProducts";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("products");
   const [showAddProduct, setShowAddProduct] = useState(false);
 
-  const tabs = [
+const tabs = [
     { id: "products", name: "Products", icon: "Package" },
+    { id: "featured", name: "Featured Carousel", icon: "Star" },
     { id: "deals", name: "Deals", icon: "Zap" },
     { id: "analytics", name: "Analytics", icon: "BarChart3" }
   ];
@@ -93,6 +96,21 @@ const AdminDashboard = () => {
                 </div>
               )}
               <AdminProductList />
+            </div>
+)}
+
+          {activeTab === "featured" && (
+            <div className="space-y-8">
+              {/* Featured Carousel Preview */}
+              <div className="card p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Carousel Preview
+                </h2>
+                <FeaturedProducts isAdmin={true} />
+              </div>
+              
+              {/* Carousel Management */}
+              <FeaturedCarouselManager />
             </div>
           )}
 
