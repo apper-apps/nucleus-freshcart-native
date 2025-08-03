@@ -14,9 +14,12 @@
       { "minQuantity": 30, "price": 7.0, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 18,
     "featured": true,
+    "trending": true,
     "dealId": "deal1",
-    "dietaryTags": ["Vegan", "Gluten-Free", "Organic", "Halal"]
+    "dietaryTags": ["Vegan", "Gluten-Free", "Organic", "Halal"],
+    "frequentlyBoughtWith": [2, 6, 12]
   },
   {
     "Id": 2,
@@ -32,9 +35,12 @@
       { "minQuantity": 15, "price": 3.5, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 25,
     "featured": false,
+    "trending": false,
     "dealId": "deal1",
-    "dietaryTags": ["Vegan", "Gluten-Free", "Halal"]
+    "dietaryTags": ["Vegan", "Gluten-Free", "Halal"],
+    "frequentlyBoughtWith": [1, 9]
   },
   {
     "Id": 3,
@@ -50,9 +56,12 @@
       { "minQuantity": 12, "price": 4.2, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 45,
     "featured": true,
+    "trending": false,
     "dealId": null,
-    "dietaryTags": ["Vegetarian", "Gluten-Free", "Halal"]
+    "dietaryTags": ["Vegetarian", "Gluten-Free", "Halal"],
+    "frequentlyBoughtWith": [6, 7]
   },
   {
     "Id": 4,
@@ -68,9 +77,12 @@
       { "minQuantity": 24, "price": 2.1, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 32,
     "featured": false,
+    "trending": true,
     "dealId": "deal2",
-    "dietaryTags": ["Vegan", "Gluten-Free", "Organic", "Halal"]
+    "dietaryTags": ["Vegan", "Gluten-Free", "Organic", "Halal"],
+    "frequentlyBoughtWith": [5, 3]
   },
   {
     "Id": 5,
@@ -86,9 +98,12 @@
       { "minQuantity": 10, "price": 5.6, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 8,
     "featured": true,
+    "trending": true,
     "dealId": "deal2",
-    "dietaryTags": ["Vegan", "Gluten-Free", "Halal"]
+    "dietaryTags": ["Vegan", "Gluten-Free", "Halal"],
+    "frequentlyBoughtWith": [4, 3]
   },
   {
     "Id": 6,
@@ -104,9 +119,12 @@
       { "minQuantity": 10, "price": 2.8, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 22,
     "featured": false,
+    "trending": false,
     "dealId": null,
-    "dietaryTags": ["Vegan", "Halal"]
+    "dietaryTags": ["Vegan", "Halal"],
+    "frequentlyBoughtWith": [1, 3, 7]
   },
   {
     "Id": 7,
@@ -122,9 +140,12 @@
       { "minQuantity": 12, "price": 4.9, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 12,
     "featured": true,
+    "trending": false,
     "dealId": "deal3",
-    "dietaryTags": ["Vegetarian", "Gluten-Free", "Organic", "Halal"]
+    "dietaryTags": ["Vegetarian", "Gluten-Free", "Organic", "Halal"],
+    "frequentlyBoughtWith": [3, 6]
   },
   {
     "Id": 8,
@@ -140,9 +161,12 @@
       { "minQuantity": 10, "price": 10.5, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 15,
     "featured": false,
+    "trending": true,
     "dealId": "deal3",
-    "dietaryTags": ["Gluten-Free", "Halal"]
+    "dietaryTags": ["Gluten-Free", "Halal"],
+    "frequentlyBoughtWith": [1, 12]
   },
   {
     "Id": 9,
@@ -158,9 +182,12 @@
       { "minQuantity": 5, "price": 8.4, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 6,
     "featured": true,
+    "trending": false,
     "dealId": null,
-    "dietaryTags": ["Vegetarian", "Halal"]
+    "dietaryTags": ["Vegetarian", "Halal"],
+    "frequentlyBoughtWith": [2, 10]
   },
   {
     "Id": 10,
@@ -176,9 +203,12 @@
       { "minQuantity": 12, "price": 3.5, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 28,
     "featured": false,
+    "trending": false,
     "dealId": "deal4",
-    "dietaryTags": ["Vegan", "Gluten-Free", "Halal"]
+    "dietaryTags": ["Vegan", "Gluten-Free", "Halal"],
+    "frequentlyBoughtWith": [9, 11]
   },
   {
     "Id": 11,
@@ -194,9 +224,12 @@
       { "minQuantity": 6, "price": 6.3, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 14,
     "featured": true,
+    "trending": true,
     "dealId": "deal4",
-    "dietaryTags": ["Vegetarian", "Halal"]
+    "dietaryTags": ["Vegetarian", "Halal"],
+    "frequentlyBoughtWith": [10, 6]
   },
   {
     "Id": 12,
@@ -212,8 +245,11 @@
       { "minQuantity": 20, "price": 2.8, "discountPercentage": 30 }
     ],
     "inStock": true,
+    "stockCount": 35,
     "featured": false,
+    "trending": false,
     "dealId": "deal1",
-    "dietaryTags": ["Vegan", "Gluten-Free", "Organic", "Halal"]
+    "dietaryTags": ["Vegan", "Gluten-Free", "Organic", "Halal"],
+    "frequentlyBoughtWith": [1, 8]
   }
 ]

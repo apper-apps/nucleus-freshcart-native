@@ -81,15 +81,48 @@ async getFeatured() {
     return sameCategory;
   }
 
-async create(product) {
+async getTrending() {
+    await this.delay(200);
+    return productsData.filter(product => product.trending).map(product => ({ ...product }));
+  }
+
+  async getFrequentlyBoughtWith(productId, limit = 3) {
+    await this.delay(150);
+    const product = productsData.find(p => p.Id === parseInt(productId));
+    if (!product || !product.frequentlyBoughtWith) {
+      return [];
+    }
+    
+    return productsData
+      .filter(p => product.frequentlyBoughtWith.includes(p.Id))
+      .slice(0, limit)
+      .map(product => ({ ...product }));
+  }
+
+  async updateStock(id, quantity) {
+    await this.delay(100);
+    const index = productsData.findIndex(p => p.Id === parseInt(id));
+    if (index === -1) {
+      throw new Error("Product not found");
+    }
+    
+    productsData[index].stockCount = Math.max(0, productsData[index].stockCount - quantity);
+    productsData[index].inStock = productsData[index].stockCount > 0;
+    return { ...productsData[index] };
+  }
+
+  async create(product) {
     await this.delay(300);
     const newProduct = {
       ...product,
       Id: Math.max(...productsData.map(p => p.Id)) + 1,
       inStock: true,
+      stockCount: product.stockCount || 50,
+      trending: product.trending || false,
       featured: product.featured || false,
       featuredOrder: product.featured ? (Math.max(...productsData.filter(p => p.featured).map(p => p.featuredOrder || 0)) + 1) : null,
-      dealId: null
+      dealId: null,
+      frequentlyBoughtWith: product.frequentlyBoughtWith || []
     };
     productsData.push(newProduct);
     return { ...newProduct };

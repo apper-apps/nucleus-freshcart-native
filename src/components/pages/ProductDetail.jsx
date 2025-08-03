@@ -15,21 +15,57 @@ import useCart from "@/hooks/useCart";
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
+const [product, setProduct] = useState(null);
   const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [frequentlyBoughtWith, setFrequentlyBoughtWith] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [selectedTier, setSelectedTier] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 34, seconds: 56 });
   const { addToCart } = useCart();
 
-  useEffect(() => {
+useEffect(() => {
     if (id) {
       loadProduct();
       loadRecommendedProducts();
+      loadFrequentlyBoughtWith();
     }
   }, [id]);
+
+  useEffect(() => {
+    // Countdown timer for limited-time offers
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        let { hours, minutes, seconds } = prev;
+        
+        if (seconds > 0) {
+          seconds--;
+        } else if (minutes > 0) {
+          minutes--;
+          seconds = 59;
+        } else if (hours > 0) {
+          hours--;
+          minutes = 59;
+          seconds = 59;
+        }
+        
+        return { hours, minutes, seconds };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const loadFrequentlyBoughtWith = async () => {
+    try {
+      const data = await productService.getFrequentlyBoughtWith(id);
+      setFrequentlyBoughtWith(data);
+    } catch (err) {
+      console.error("Failed to load frequently bought together products:", err);
+    }
+  };
 
   const loadProduct = async () => {
     try {
@@ -52,12 +88,26 @@ const ProductDetail = () => {
       console.error("Error loading recommendations:", err);
     }
   };
-
-  const handleAddToCart = () => {
+const handleAddToCart = () => {
     if (product && selectedQuantity > 0) {
       addToCart(product, selectedQuantity);
     }
   };
+
+  const getDietaryBadgeVariant = (tag) => {
+    const variants = {
+      'Vegan': 'vegan',
+      'Organic': 'organic',
+      'Vegetarian': 'vegetarian',
+      'Halal': 'halal',
+      'Gluten-Free': 'glutenFree'
+    };
+    return variants[tag] || 'default';
+  };
+
+  const stockLeft = product?.stockCount || 0;
+  const isLowStock = stockLeft <= 10;
+  const isVeryLowStock = stockLeft <= 5;
 
   const handleBuyNow = () => {
     handleAddToCart();
@@ -155,18 +205,29 @@ const ProductDetail = () => {
               </div>
               
               {/* Dietary Tags */}
-              {product.dietaryTags && product.dietaryTags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {product.dietaryTags.map((tag) => (
-                    <Badge
+{product.dietaryTags && product.dietaryTags.length > 0 && (
+                <motion.div 
+                  className="flex flex-wrap gap-2 mb-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  {product.dietaryTags.map((tag, index) => (
+                    <motion.div
                       key={tag}
-                      variant="secondary"
-                      className="px-3 py-1 bg-gradient-to-r from-accent-50 to-accent-100 text-accent-700 border border-accent-200"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 * index }}
                     >
-                      {tag}
-                    </Badge>
+                      <Badge
+                        variant={getDietaryBadgeVariant(tag)}
+                        className="px-3 py-1 font-medium"
+                      >
+                        {tag}
+                      </Badge>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               )}
               
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -178,19 +239,60 @@ const ProductDetail = () => {
             </div>
 
             {/* Stock Status */}
-            <div className="flex items-center space-x-2">
-              {product.inStock ? (
-                <>
-                  <ApperIcon name="CheckCircle" className="h-5 w-5 text-green-500" />
-                  <span className="text-green-700 font-medium">In Stock</span>
-                </>
-              ) : (
-                <>
-                  <ApperIcon name="XCircle" className="h-5 w-5 text-red-500" />
-                  <span className="text-red-700 font-medium">Out of Stock</span>
-                </>
+<div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                {product.inStock ? (
+                  <motion.div 
+                    className={`flex items-center space-x-2 ${isVeryLowStock ? 'text-red-600' : isLowStock ? 'text-orange-600' : 'text-green-600'}`}
+                    animate={isVeryLowStock ? { scale: [1, 1.05, 1] } : {}}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  >
+                    <ApperIcon name="CheckCircle" className={`h-5 w-5 ${isVeryLowStock ? 'text-red-500' : isLowStock ? 'text-orange-500' : 'text-green-500'}`} />
+                    <span className="font-medium">
+                      {isVeryLowStock ? `Only ${stockLeft} left - Order now!` : isLowStock ? `${stockLeft} left in stock` : `${stockLeft} available`}
+                    </span>
+                  </motion.div>
+                ) : (
+                  <>
+                    <ApperIcon name="XCircle" className="h-5 w-5 text-red-500" />
+                    <span className="text-red-700 font-medium">Out of Stock</span>
+                  </>
+                )}
+              </div>
+              {product.trending && (
+                <Badge variant="trending" className="px-3 py-1">
+                  🔥 Trending Now
+                </Badge>
               )}
             </div>
+
+            {/* Limited Time Offer Countdown */}
+            {product.dealId && (
+              <motion.div 
+                className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-lg p-4 mt-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <ApperIcon name="Clock" className="h-5 w-5 text-red-600" />
+                    <span className="font-semibold text-red-800">Limited Time Offer!</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
+                      {String(timeLeft.hours).padStart(2, '0')}h
+                    </div>
+                    <div className="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
+                      {String(timeLeft.minutes).padStart(2, '0')}m
+                    </div>
+                    <div className="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
+                      {String(timeLeft.seconds).padStart(2, '0')}s
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             {/* Quantity Selector */}
             <QuantitySelector
@@ -258,6 +360,49 @@ const ProductDetail = () => {
                   index={index}
                 />
               ))}
+</div>
+          </motion.section>
+        )}
+
+        {/* Frequently Bought Together Section */}
+        {frequentlyBoughtWith.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mb-12"
+          >
+            <div className="flex items-center space-x-2 mb-6">
+              <ApperIcon name="Users" className="h-6 w-6 text-primary-600" />
+              <h2 className="text-2xl font-bold text-gray-900">Frequently Bought Together</h2>
+            </div>
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {frequentlyBoughtWith.map((item, index) => (
+                  <motion.div
+                    key={item.Id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * index }}
+                    className="bg-white rounded-lg p-4 border border-blue-200 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={item.images?.[0] || "/placeholder-product.jpg"}
+                        alt={item.name}
+                        className="w-12 h-12 object-cover rounded-lg"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-gray-900 truncate">{item.name}</h4>
+                        <p className="text-primary-600 font-semibold">Rs.{item.priceTiers?.[0]?.price.toFixed(2)}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="mt-4 text-center">
+                <p className="text-blue-700 font-medium">Customers who bought this item also purchased these products</p>
+              </div>
             </div>
           </motion.section>
         )}
