@@ -1,0 +1,30 @@
+[
+  {
+    "Id": 1,
+    "title": "Farm Fresh Vegetables",
+    "productIds": [1, 2, 12],
+    "expiresAt": "2024-12-31T23:59:59.000Z",
+    "position": 1
+  },
+  {
+    "Id": 2,
+    "title": "Tropical Fruit Mix",
+    "productIds": [4, 5],
+    "expiresAt": "2024-12-25T23:59:59.000Z",
+    "position": 2
+  },
+  {
+    "Id": 3,
+    "title": "Protein Essentials",
+    "productIds": [7, 8],
+    "expiresAt": "2024-12-30T23:59:59.000Z",
+    "position": 3
+  },
+  {
+    "Id": 4,
+    "title": "Quick & Fresh",
+    "productIds": [10, 11],
+    "expiresAt": "2024-12-28T23:59:59.000Z",
+    "position": 4
+  }
+]

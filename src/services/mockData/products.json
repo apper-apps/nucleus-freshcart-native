@@ -1,0 +1,207 @@
+[
+  {
+    "Id": 1,
+    "name": "Organic Tomatoes",
+    "category": "Vegetables",
+    "images": [
+      "https://images.unsplash.com/photo-1546470427-e26264fbbea0?w=400",
+      "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400"
+    ],
+    "description": "Fresh organic tomatoes, locally grown and pesticide-free. Perfect for salads, cooking, and sauces.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 10, "discountPercentage": 0 },
+      { "minQuantity": 10, "price": 8.5, "discountPercentage": 15 },
+      { "minQuantity": 30, "price": 7.0, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": true,
+    "dealId": "deal1"
+  },
+  {
+    "Id": 2,
+    "name": "Fresh Basil",
+    "category": "Vegetables",
+    "images": [
+      "https://images.unsplash.com/photo-1618164436241-4473940d1f5c?w=400"
+    ],
+    "description": "Aromatic fresh basil leaves, perfect for Italian dishes and garnishing.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 5, "discountPercentage": 0 },
+      { "minQuantity": 5, "price": 4.25, "discountPercentage": 15 },
+      { "minQuantity": 15, "price": 3.5, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": false,
+    "dealId": "deal1"
+  },
+  {
+    "Id": 3,
+    "name": "Premium Milk",
+    "category": "Milk",
+    "images": [
+      "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400"
+    ],
+    "description": "Fresh whole milk from grass-fed cows, rich in nutrients and flavor.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 6, "discountPercentage": 0 },
+      { "minQuantity": 6, "price": 5.1, "discountPercentage": 15 },
+      { "minQuantity": 12, "price": 4.2, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": true,
+    "dealId": null
+  },
+  {
+    "Id": 4,
+    "name": "Organic Bananas",
+    "category": "Fruits",
+    "images": [
+      "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400"
+    ],
+    "description": "Sweet organic bananas, perfect for smoothies, baking, or snacking.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 3, "discountPercentage": 0 },
+      { "minQuantity": 12, "price": 2.55, "discountPercentage": 15 },
+      { "minQuantity": 24, "price": 2.1, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": false,
+    "dealId": "deal2"
+  },
+  {
+    "Id": 5,
+    "name": "Fresh Strawberries",
+    "category": "Fruits",
+    "images": [
+      "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400"
+    ],
+    "description": "Juicy red strawberries, handpicked and farm-fresh.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 8, "discountPercentage": 0 },
+      { "minQuantity": 5, "price": 6.8, "discountPercentage": 15 },
+      { "minQuantity": 10, "price": 5.6, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": true,
+    "dealId": "deal2"
+  },
+  {
+    "Id": 6,
+    "name": "Whole Grain Bread",
+    "category": "Groceries",
+    "images": [
+      "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400"
+    ],
+    "description": "Freshly baked whole grain bread, rich in fiber and nutrients.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 4, "discountPercentage": 0 },
+      { "minQuantity": 5, "price": 3.4, "discountPercentage": 15 },
+      { "minQuantity": 10, "price": 2.8, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": false,
+    "dealId": null
+  },
+  {
+    "Id": 7,
+    "name": "Organic Eggs",
+    "category": "Groceries",
+    "images": [
+      "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400"
+    ],
+    "description": "Farm-fresh organic eggs from free-range chickens.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 7, "discountPercentage": 0 },
+      { "minQuantity": 6, "price": 5.95, "discountPercentage": 15 },
+      { "minQuantity": 12, "price": 4.9, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": true,
+    "dealId": "deal3"
+  },
+  {
+    "Id": 8,
+    "name": "Premium Ground Beef",
+    "category": "Meat",
+    "images": [
+      "https://images.unsplash.com/photo-1588347818375-6e7c55a73d91?w=400"
+    ],
+    "description": "High-quality ground beef, perfect for burgers, meatballs, and cooking.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 15, "discountPercentage": 0 },
+      { "minQuantity": 5, "price": 12.75, "discountPercentage": 15 },
+      { "minQuantity": 10, "price": 10.5, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": false,
+    "dealId": "deal3"
+  },
+  {
+    "Id": 9,
+    "name": "Margherita Pizza",
+    "category": "Pizza",
+    "images": [
+      "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400"
+    ],
+    "description": "Classic Margherita pizza with fresh mozzarella, tomatoes, and basil.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 12, "discountPercentage": 0 },
+      { "minQuantity": 3, "price": 10.2, "discountPercentage": 15 },
+      { "minQuantity": 5, "price": 8.4, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": true,
+    "dealId": null
+  },
+  {
+    "Id": 10,
+    "name": "Orange Juice",
+    "category": "Drinks",
+    "images": [
+      "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400"
+    ],
+    "description": "Freshly squeezed orange juice, no added sugar or preservatives.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 5, "discountPercentage": 0 },
+      { "minQuantity": 6, "price": 4.25, "discountPercentage": 15 },
+      { "minQuantity": 12, "price": 3.5, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": false,
+    "dealId": "deal4"
+  },
+  {
+    "Id": 11,
+    "name": "Caesar Salad",
+    "category": "Ready-to-Eat",
+    "images": [
+      "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400"
+    ],
+    "description": "Fresh Caesar salad with crisp romaine, parmesan, and croutons.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 9, "discountPercentage": 0 },
+      { "minQuantity": 3, "price": 7.65, "discountPercentage": 15 },
+      { "minQuantity": 6, "price": 6.3, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": true,
+    "dealId": "deal4"
+  },
+  {
+    "Id": 12,
+    "name": "Organic Carrots",
+    "category": "Vegetables",
+    "images": [
+      "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400"
+    ],
+    "description": "Fresh organic carrots, sweet and crunchy, perfect for cooking or snacking.",
+    "priceTiers": [
+      { "minQuantity": 1, "price": 4, "discountPercentage": 0 },
+      { "minQuantity": 10, "price": 3.4, "discountPercentage": 15 },
+      { "minQuantity": 20, "price": 2.8, "discountPercentage": 30 }
+    ],
+    "inStock": true,
+    "featured": false,
+    "dealId": "deal1"
+  }
+]

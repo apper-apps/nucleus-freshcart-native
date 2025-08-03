@@ -1,0 +1,50 @@
+[
+  {
+    "Id": 1,
+    "name": "Vegetables",
+    "icon": "Carrot",
+    "image": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300"
+  },
+  {
+    "Id": 2,
+    "name": "Fruits",
+    "icon": "Apple",
+    "image": "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=300"
+  },
+  {
+    "Id": 3,
+    "name": "Groceries",
+    "icon": "ShoppingBasket",
+    "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300"
+  },
+  {
+    "Id": 4,
+    "name": "Meat",
+    "icon": "Beef",
+    "image": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=300"
+  },
+  {
+    "Id": 5,
+    "name": "Milk",
+    "icon": "Milk",
+    "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300"
+  },
+  {
+    "Id": 6,
+    "name": "Pizza",
+    "icon": "Pizza",
+    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300"
+  },
+  {
+    "Id": 7,
+    "name": "Drinks",
+    "icon": "Coffee",
+    "image": "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300"
+  },
+  {
+    "Id": 8,
+    "name": "Ready-to-Eat",
+    "icon": "UtensilsCrossed",
+    "image": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300"
+  }
+]
