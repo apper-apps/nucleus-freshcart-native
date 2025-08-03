@@ -240,14 +240,14 @@ if (!product) {
               </p>
             </div>
 
-            {/* Quantity Selector with Tiered Pricing */}
+{/* Quantity Selector with Tiered Pricing */}
             {product.priceTiers && product.priceTiers.length > 0 && (
               <div className="mb-8 p-6 bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl border border-primary-100">
                 <QuantitySelector
                   priceTiers={product.priceTiers}
                   initialQuantity={selectedQuantity}
                   onQuantityChange={setSelectedQuantity}
-                  onTierChange={setCurrentTier}
+                  onTierChange={setSelectedTier}
                 />
               </div>
             )}
