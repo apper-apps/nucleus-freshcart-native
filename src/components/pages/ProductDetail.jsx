@@ -22,12 +22,13 @@ const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const [selectedTier, setSelectedTier] = useState(null);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+const [selectedTier, setSelectedTier] = useState(null);
+const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 34, seconds: 56 });
   const [urgencyLevel, setUrgencyLevel] = useState('normal');
   const { addToCart } = useCart();
-useEffect(() => {
+
+  useEffect(() => {
     if (id) {
       loadProduct();
       loadRecommendedProducts();
@@ -91,7 +92,11 @@ useEffect(() => {
   };
 const handleAddToCart = () => {
     if (product && selectedQuantity > 0) {
-      addToCart(product, selectedQuantity);
+      // Use tier pricing if available
+      const productToAdd = selectedTier ? 
+        { ...product, price: selectedTier.price } : 
+        product;
+      addToCart(productToAdd, selectedQuantity);
     }
   };
 
