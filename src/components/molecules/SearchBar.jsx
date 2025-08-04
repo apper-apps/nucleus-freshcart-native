@@ -1,61 +1,43 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import ApperIcon from "@/components/ApperIcon";
-import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 
-const SearchBar = ({ onSearch, placeholder = "Search for fresh products...", className = "" }) => {
-  const [query, setQuery] = useState("");
+const SearchBar = ({ onSearch, placeholder = "Search products..." }) => {
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSearch(query);
+    onSearch(searchTerm);
   };
 
-  const handleClear = () => {
-    setQuery("");
-    onSearch("");
+  const handleInputChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   return (
-    <motion.form
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      onSubmit={handleSubmit}
-      className={`relative flex items-center ${className}`}
-    >
-      <div className="relative flex-1">
+    <form onSubmit={handleSubmit} className="relative">
+      <div className="relative">
         <ApperIcon 
           name="Search" 
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" 
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" 
         />
-        <Input
+        <input
           type="text"
+          value={searchTerm}
+          onChange={handleInputChange}
           placeholder={placeholder}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="pl-12 pr-12 rounded-l-lg rounded-r-none border-r-0 focus:border-r focus:rounded-r-lg"
+          className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         />
-        {query && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            type="button"
-            onClick={handleClear}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <ApperIcon name="X" className="h-4 w-4" />
-          </motion.button>
-        )}
+        <Button
+          type="submit"
+          variant="ghost"
+          size="sm"
+          className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1"
+        >
+          <ApperIcon name="ArrowRight" className="h-4 w-4" />
+        </Button>
       </div>
-      <Button 
-        type="submit" 
-        className="rounded-l-none h-12"
-        size="default"
-      >
-        <ApperIcon name="Search" className="h-5 w-5" />
-      </Button>
-    </motion.form>
+    </form>
   );
 };
 

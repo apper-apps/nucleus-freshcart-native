@@ -64,8 +64,8 @@ const AdminProductList = () => {
     }
   };
 
-  const handleDeleteProduct = async (product) => {
-    if (!window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
+const handleDeleteProduct = async (product) => {
+    if (!window.confirm(`Are you sure you want to delete "${product.Name || product.name}"?`)) {
       return;
     }
 
@@ -123,9 +123,9 @@ const AdminProductList = () => {
             <div className="flex items-start space-x-4">
               {/* Product Image */}
               <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                <img
+<img
                   src={product.images?.[0] || "/placeholder-product.jpg"}
-                  alt={product.name}
+                  alt={product.Name || product.name}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -134,8 +134,8 @@ const AdminProductList = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 truncate">
-                      {product.name}
+<h3 className="text-lg font-semibold text-gray-900 truncate">
+                      {product.Name || product.name}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                       {product.description}

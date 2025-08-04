@@ -5,189 +5,169 @@ import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
 
 const QuantitySelector = ({ 
-  priceTiers, 
+  priceTiers = [], 
   initialQuantity = 1, 
-  onQuantityChange, 
+  onQuantityChange,
   onTierChange 
 }) => {
   const [quantity, setQuantity] = useState(initialQuantity);
   const [selectedTier, setSelectedTier] = useState(null);
 
-  // Find the best tier for current quantity
-  const getBestTier = (qty) => {
-    const sortedTiers = [...priceTiers].sort((a, b) => b.minQuantity - a.minQuantity);
-    for (const tier of sortedTiers) {
-      if (qty >= tier.minQuantity) {
-        return tier;
+  // Parse priceTiers if it's a string
+  const parsedTiers = (() => {
+    if (typeof priceTiers === 'string') {
+      try {
+        return JSON.parse(priceTiers);
+      } catch (e) {
+        return [];
       }
     }
-    return priceTiers[0];
-  };
+    return Array.isArray(priceTiers) ? priceTiers : [];
+  })();
 
   useEffect(() => {
-    const bestTier = getBestTier(quantity);
-    setSelectedTier(bestTier);
-    onQuantityChange && onQuantityChange(quantity);
-    onTierChange && onTierChange(bestTier);
+    if (parsedTiers.length > 0) {
+      // Find the appropriate tier based on quantity
+      const tier = [...parsedTiers]
+        .sort((a, b) => b.minQuantity - a.minQuantity)
+        .find(t => quantity >= t.minQuantity) || parsedTiers[0];
+      
+      setSelectedTier(tier);
+      onTierChange && onTierChange(tier);
+    }
   }, [quantity, priceTiers]);
 
-  const handleDecrease = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
+  useEffect(() => {
+    onQuantityChange && onQuantityChange(quantity);
+  }, [quantity]);
+
+  const handleQuantityChange = (newQuantity) => {
+    if (newQuantity >= 1) {
+      setQuantity(newQuantity);
     }
   };
 
-  const handleIncrease = () => {
-    setQuantity(quantity + 1);
-  };
+  const increment = () => handleQuantityChange(quantity + 1);
+  const decrement = () => handleQuantityChange(quantity - 1);
 
-  const handleDirectInput = (e) => {
-    const value = parseInt(e.target.value) || 1;
-    setQuantity(Math.max(1, value));
-  };
+  if (parsedTiers.length === 0) {
+    return (
+      <div className="flex items-center space-x-3">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={decrement}
+          disabled={quantity <= 1}
+          className="w-10 h-10 p-0"
+        >
+          <ApperIcon name="Minus" className="h-4 w-4" />
+        </Button>
+        <span className="text-lg font-semibold w-12 text-center">{quantity}</span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={increment}
+          className="w-10 h-10 p-0"
+        >
+          <ApperIcon name="Plus" className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  }
+
+  const totalPrice = selectedTier ? selectedTier.price * quantity : 0;
+  const originalTotalPrice = parsedTiers[0] ? parsedTiers[0].price * quantity : 0;
+  const savings = originalTotalPrice - totalPrice;
 
   return (
     <div className="space-y-4">
-      {/* Quantity Controls */}
-      <div className="flex items-center space-x-4">
+      {/* Quantity Selector */}
+      <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-gray-700">Quantity:</span>
-        <div className="flex items-center border border-gray-300 rounded-lg">
+        <div className="flex items-center space-x-3">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            onClick={handleDecrease}
+            onClick={decrement}
             disabled={quantity <= 1}
-            className="h-10 w-10 p-0 rounded-none"
+            className="w-10 h-10 p-0"
           >
             <ApperIcon name="Minus" className="h-4 w-4" />
           </Button>
-          <input
-            type="number"
-            min="1"
-            value={quantity}
-            onChange={handleDirectInput}
-            className="w-16 h-10 text-center border-0 focus:ring-0 focus:outline-none"
-          />
+          <span className="text-lg font-semibold w-12 text-center">{quantity}</span>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            onClick={handleIncrease}
-            className="h-10 w-10 p-0 rounded-none"
+            onClick={increment}
+            className="w-10 h-10 p-0"
           >
             <ApperIcon name="Plus" className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      {/* Price Tiers Display */}
-<div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium text-gray-700">Quantity Discounts Available:</h4>
-          {selectedTier && selectedTier.discountPercentage > 0 && (
-            <Badge variant="discount" className="animate-pulse">
-              {selectedTier.discountPercentage}% OFF Applied
-            </Badge>
-          )}
-        </div>
+      {/* Price Tiers */}
+      <div className="space-y-3">
+        <h4 className="text-sm font-medium text-gray-700">Bulk Pricing:</h4>
         <div className="grid gap-2">
-          {priceTiers.map((tier, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 ${
-                selectedTier?.minQuantity === tier.minQuantity
-                  ? "border-primary-500 bg-primary-50 shadow-md"
-                  : "border-gray-200 bg-white"
-              }`}
-            >
-              <div className="flex items-center space-x-3">
-                <span className="text-sm font-medium">
-                  {tier.minQuantity}+ items
-                </span>
-                {tier.discountPercentage > 0 && (
-                  <Badge variant="discount">
-                    {tier.discountPercentage}% OFF
-                  </Badge>
-                )}
-              </div>
-<div className="text-right">
-                <div className="flex flex-col items-end">
-                  <span className="text-lg font-bold text-primary-600">
-                    Rs.{tier.price.toFixed(2)} each
-                  </span>
-                  {tier.discountPercentage > 0 && (
-                    <span className="text-sm text-gray-500 line-through">
-                      Rs.{(tier.price / (1 - tier.discountPercentage / 100)).toFixed(2)}
+          {parsedTiers.map((tier, index) => {
+            const isActive = selectedTier && tier.minQuantity === selectedTier.minQuantity;
+            const isAvailable = quantity >= tier.minQuantity;
+            
+            return (
+              <motion.div
+                key={index}
+                className={`p-3 rounded-lg border-2 transition-all duration-200 ${
+                  isActive
+                    ? 'border-primary-500 bg-primary-50'
+                    : isAvailable
+                    ? 'border-gray-200 bg-white hover:border-primary-300'
+                    : 'border-gray-100 bg-gray-50 opacity-60'
+                }`}
+                whileHover={isAvailable ? { scale: 1.02 } : {}}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium">
+                      {tier.minQuantity}+ items
                     </span>
-                  )}
+                    {tier.discountPercentage > 0 && (
+                      <Badge variant="discount" className="text-xs">
+                        {tier.discountPercentage}% OFF
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-primary-600">
+                      Rs.{tier.price.toFixed(2)} each
+                    </div>
+                    {tier.discountPercentage > 0 && parsedTiers[0] && (
+                      <div className="text-xs text-gray-500 line-through">
+                        Rs.{parsedTiers[0].price.toFixed(2)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {selectedTier?.minQuantity === tier.minQuantity && (
-                  <div className="text-sm text-primary-600 font-medium mt-1">
-                    Total: Rs.{(tier.price * quantity).toFixed(2)}
+                
+                {isActive && (
+                  <div className="mt-2 pt-2 border-t border-primary-200">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-primary-700">Total for {quantity} items:</span>
+                      <span className="font-bold text-primary-700">Rs.{totalPrice.toFixed(2)}</span>
+                    </div>
+                    {savings > 0 && (
+                      <div className="flex items-center justify-between text-xs text-green-600">
+                        <span>You save:</span>
+                        <span className="font-semibold">Rs.{savings.toFixed(2)}</span>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
-
-{/* Savings Calculator */}
-      {selectedTier && selectedTier.discountPercentage > 0 && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <ApperIcon name="CheckCircle" className="h-5 w-5 text-green-600" />
-              <span className="text-green-800 font-medium">
-                You save Rs.{((priceTiers[0].price - selectedTier.price) * quantity).toFixed(2)} 
-              </span>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-green-700">
-                vs buying {quantity} at regular price
-              </div>
-              <div className="text-xs text-green-600">
-                Regular: Rs.{(priceTiers[0].price * quantity).toFixed(2)}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Next Tier Incentive */}
-      {(() => {
-        const nextTier = priceTiers.find(tier => tier.minQuantity > quantity);
-        if (nextTier) {
-          const additionalNeeded = nextTier.minQuantity - quantity;
-          const additionalSavings = (selectedTier?.price || priceTiers[0].price) - nextTier.price;
-          return (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4"
-            >
-              <div className="flex items-center space-x-2">
-                <ApperIcon name="TrendingUp" className="h-5 w-5 text-blue-600" />
-                <div>
-                  <span className="text-blue-800 font-medium">
-                    Buy {additionalNeeded} more to save Rs.{additionalSavings.toFixed(2)} per item
-                  </span>
-                  <div className="text-sm text-blue-600 mt-1">
-                    Next tier: {nextTier.discountPercentage}% OFF at {nextTier.minQuantity}+ items
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          );
-        }
-        return null;
-      })()}
     </div>
   );
 };

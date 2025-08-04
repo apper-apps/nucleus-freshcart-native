@@ -5,7 +5,6 @@ import ApperIcon from "@/components/ApperIcon";
 import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
 import useCart from "@/hooks/useCart";
-
 const ProductCard = ({ product, index = 0 }) => {
   const navigate = useNavigate();
 const { addToCart } = useCart();
@@ -111,8 +110,8 @@ Math.round(currentTier.price / (1 - currentTier.discountPercentage / 100)) : nul
     <div className="p-5 space-y-4">
         <div>
             <h3
-                className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 text-lg mb-2">
-                {product.name}
+className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 text-lg mb-2">
+                {product.Name || product.name}
             </h3>
             {/* Pricing Section */}
             <div className="pricing flex items-center space-x-3 mb-3">

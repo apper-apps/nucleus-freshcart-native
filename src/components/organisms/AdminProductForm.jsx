@@ -9,7 +9,7 @@ import Button from "@/components/atoms/Button";
 
 const AdminProductForm = ({ onSuccess, onCancel }) => {
 const [formData, setFormData] = useState({
-    name: "",
+Name: "",
     category: "",
     description: "",
     buyingPrice: 0,
@@ -195,8 +195,20 @@ const handleSubmit = async (e) => {
     try {
       setLoading(true);
       
-      const productData = {
-        ...formData,
+const productData = {
+        Name: formData.Name,
+        category: formData.category,
+        description: formData.description,
+        images: validImages,
+        priceTiers: formData.priceTiers.sort((a, b) => a.minQuantity - b.minQuantity),
+        inStock: true,
+        stockCount: 50,
+        featured: formData.featured,
+        trending: false,
+        dealId: "",
+        dietaryTags: "",
+        frequentlyBoughtWith: "",
+        featuredOrder: formData.featured ? 1 : null,
         measurementUnit: formData.measurementUnit === "custom" ? formData.customUnit : formData.measurementUnit,
         images: validImages,
         priceTiers: formData.priceTiers.sort((a, b) => a.minQuantity - b.minQuantity)
@@ -224,9 +236,9 @@ const handleSubmit = async (e) => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Product Name *
           </label>
-          <Input
-            value={formData.name}
-            onChange={(e) => handleInputChange("name", e.target.value)}
+<Input
+            value={formData.Name}
+            onChange={(e) => handleInputChange("Name", e.target.value)}
             placeholder="Enter product name"
             required
           />

@@ -90,8 +90,8 @@ transition={{ delay: (index * 0.1) + (productIndex * 0.05) }}
               )}
 
               <img
-                src={product.images?.[0] || "/placeholder-product.jpg"}
-                alt={product.name}
+src={product.images?.[0] || "/placeholder-product.jpg"}
+                alt={product.Name || product.name}
                 className="w-full h-full object-cover rounded-md transition-all duration-500 group-hover:scale-125 group-hover:rotate-1"
                 loading="lazy"
               />
@@ -110,7 +110,7 @@ transition={{ delay: (index * 0.1) + (productIndex * 0.05) }}
 
               {/* Enhanced Product Info Tooltip */}
               <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap z-30 shadow-xl">
-                <div className="font-semibold">{product.name}</div>
+<div className="font-semibold">{product.Name || product.name}</div>
                 <div className="text-gray-300">Rs.{product.priceTiers?.[0]?.price || 0}</div>
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
               </div>

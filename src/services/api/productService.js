@@ -1,158 +1,683 @@
-import productsData from "@/services/mockData/products.json";
-
 class ProductService {
+  constructor() {
+    const { ApperClient } = window.ApperSDK;
+    this.apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+  }
+
   async getAll() {
-    await this.delay(300);
-    return [...productsData];
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "images" } },
+          { field: { Name: "description" } },
+          { field: { Name: "priceTiers" } },
+          { field: { Name: "inStock" } },
+          { field: { Name: "stockCount" } },
+          { field: { Name: "featured" } },
+          { field: { Name: "trending" } },
+          { field: { Name: "dealId" } },
+          { field: { Name: "dietaryTags" } },
+          { field: { Name: "frequentlyBoughtWith" } },
+          { field: { Name: "featuredOrder" } }
+        ],
+        orderBy: [{ fieldName: "Name", sorttype: "ASC" }]
+      };
+
+      const response = await this.apperClient.fetchRecords("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching products:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching products:", error.message);
+      }
+      throw error;
+    }
   }
 
   async getById(id) {
-    await this.delay(200);
-    const product = productsData.find(p => p.Id === parseInt(id));
-    if (!product) {
-      throw new Error("Product not found");
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "images" } },
+          { field: { Name: "description" } },
+          { field: { Name: "priceTiers" } },
+          { field: { Name: "inStock" } },
+          { field: { Name: "stockCount" } },
+          { field: { Name: "featured" } },
+          { field: { Name: "trending" } },
+          { field: { Name: "dealId" } },
+          { field: { Name: "dietaryTags" } },
+          { field: { Name: "frequentlyBoughtWith" } },
+          { field: { Name: "featuredOrder" } }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById("product", parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching product with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(`Error fetching product with ID ${id}:`, error.message);
+      }
+      throw error;
     }
-    return { ...product };
   }
 
   async getByCategory(category) {
-    await this.delay(250);
-    return productsData.filter(p => p.category === category).map(p => ({ ...p }));
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "images" } },
+          { field: { Name: "description" } },
+          { field: { Name: "priceTiers" } },
+          { field: { Name: "inStock" } },
+          { field: { Name: "stockCount" } },
+          { field: { Name: "featured" } },
+          { field: { Name: "trending" } },
+          { field: { Name: "dealId" } },
+          { field: { Name: "dietaryTags" } },
+          { field: { Name: "frequentlyBoughtWith" } },
+          { field: { Name: "featuredOrder" } }
+        ],
+        where: [
+          {
+            FieldName: "category",
+            Operator: "EqualTo",
+            Values: [category]
+          }
+        ],
+        orderBy: [{ fieldName: "Name", sorttype: "ASC" }]
+      };
+
+      const response = await this.apperClient.fetchRecords("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching products by category:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching products by category:", error.message);
+      }
+      throw error;
+    }
   }
 
-async getFeatured() {
-    await this.delay(200);
-    const featured = productsData.filter(p => p.featured).map(p => ({ ...p }));
-    // Sort by featuredOrder if it exists, otherwise by Id
-    return featured.sort((a, b) => (a.featuredOrder || a.Id) - (b.featuredOrder || b.Id));
+  async getFeatured() {
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "images" } },
+          { field: { Name: "description" } },
+          { field: { Name: "priceTiers" } },
+          { field: { Name: "inStock" } },
+          { field: { Name: "stockCount" } },
+          { field: { Name: "featured" } },
+          { field: { Name: "trending" } },
+          { field: { Name: "dealId" } },
+          { field: { Name: "dietaryTags" } },
+          { field: { Name: "frequentlyBoughtWith" } },
+          { field: { Name: "featuredOrder" } }
+        ],
+        where: [
+          {
+            FieldName: "featured",
+            Operator: "EqualTo",
+            Values: [true]
+          }
+        ],
+        orderBy: [{ fieldName: "featuredOrder", sorttype: "ASC" }]
+      };
+
+      const response = await this.apperClient.fetchRecords("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching featured products:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching featured products:", error.message);
+      }
+      throw error;
+    }
   }
 
   async setFeaturedOrder(productIds) {
-    await this.delay(300);
-    productIds.forEach((id, index) => {
-      const product = productsData.find(p => p.Id === parseInt(id));
-      if (product && product.featured) {
-        product.featuredOrder = index + 1;
+    try {
+      const updatePromises = productIds.map(async (id, index) => {
+        const params = {
+          records: [
+            {
+              Id: parseInt(id),
+              featuredOrder: index + 1
+            }
+          ]
+        };
+        return this.apperClient.updateRecord("product", params);
+      });
+
+      const results = await Promise.all(updatePromises);
+      
+      // Check if all updates were successful
+      const allSuccessful = results.every(response => response.success);
+      
+      if (!allSuccessful) {
+        const failedUpdates = results.filter(response => !response.success);
+        console.error(`Failed to update featured order for ${failedUpdates.length} products:${JSON.stringify(failedUpdates)}`);
       }
-    });
-    return true;
+
+      return allSuccessful;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error setting featured order:", error?.response?.data?.message);
+      } else {
+        console.error("Error setting featured order:", error.message);
+      }
+      throw error;
+    }
   }
 
   async search(query, category = null) {
-    await this.delay(300);
-    let results = [...productsData];
-    
-    if (category) {
-      results = results.filter(p => p.category === category);
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "images" } },
+          { field: { Name: "description" } },
+          { field: { Name: "priceTiers" } },
+          { field: { Name: "inStock" } },
+          { field: { Name: "stockCount" } },
+          { field: { Name: "featured" } },
+          { field: { Name: "trending" } },
+          { field: { Name: "dealId" } },
+          { field: { Name: "dietaryTags" } },
+          { field: { Name: "frequentlyBoughtWith" } },
+          { field: { Name: "featuredOrder" } }
+        ],
+        whereGroups: []
+      };
+
+      // Build search conditions
+      const conditions = [];
+
+      if (query) {
+        conditions.push({
+          conditions: [
+            { fieldName: "Name", operator: "Contains", values: [query] },
+            { fieldName: "description", operator: "Contains", values: [query] },
+            { fieldName: "category", operator: "Contains", values: [query] }
+          ],
+          operator: "OR"
+        });
+      }
+
+      if (category) {
+        conditions.push({
+          conditions: [
+            { fieldName: "category", operator: "EqualTo", values: [category] }
+          ],
+          operator: "AND"
+        });
+      }
+
+      if (conditions.length > 0) {
+        params.whereGroups = [{
+          operator: "AND",
+          subGroups: conditions
+        }];
+      }
+
+      const response = await this.apperClient.fetchRecords("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error searching products:", error?.response?.data?.message);
+      } else {
+        console.error("Error searching products:", error.message);
+      }
+      throw error;
     }
-    
-    if (query) {
-      const searchTerm = query.toLowerCase();
-      results = results.filter(p => 
-        p.name.toLowerCase().includes(searchTerm) ||
-        p.description.toLowerCase().includes(searchTerm) ||
-        p.category.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    return results;
   }
 
   async getRecommended(productId, limit = 4) {
-    await this.delay(200);
-    const currentProduct = productsData.find(p => p.Id === parseInt(productId));
-    if (!currentProduct) return [];
-    
-    // Get products from same category, excluding current product
-    const sameCategory = productsData
-      .filter(p => p.category === currentProduct.category && p.Id !== parseInt(productId))
-      .slice(0, limit);
-    
-    // If not enough from same category, add random products
-    if (sameCategory.length < limit) {
-      const remaining = productsData
-        .filter(p => p.Id !== parseInt(productId) && 
-          !sameCategory.some(sc => sc.Id === p.Id))
-        .slice(0, limit - sameCategory.length);
+    try {
+      // First get the current product to know its category
+      const currentProduct = await this.getById(productId);
+      if (!currentProduct) return [];
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "images" } },
+          { field: { Name: "description" } },
+          { field: { Name: "priceTiers" } },
+          { field: { Name: "inStock" } },
+          { field: { Name: "stockCount" } },
+          { field: { Name: "featured" } },
+          { field: { Name: "trending" } },
+          { field: { Name: "dealId" } },
+          { field: { Name: "dietaryTags" } },
+          { field: { Name: "frequentlyBoughtWith" } },
+          { field: { Name: "featuredOrder" } }
+        ],
+        whereGroups: [{
+          operator: "AND",
+          subGroups: [
+            {
+              conditions: [
+                { fieldName: "category", operator: "EqualTo", values: [currentProduct.category] }
+              ],
+              operator: "AND"
+            },
+            {
+              conditions: [
+                { fieldName: "Id", operator: "NotEqualTo", values: [parseInt(productId)] }
+              ],
+              operator: "AND"
+            }
+          ]
+        }],
+        pagingInfo: { limit: limit, offset: 0 }
+      };
+
+      const response = await this.apperClient.fetchRecords("product", params);
       
-      return [...sameCategory, ...remaining];
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching recommended products:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching recommended products:", error.message);
+      }
+      return [];
     }
-    
-    return sameCategory;
   }
 
-async getTrending() {
-    await this.delay(200);
-    return productsData.filter(product => product.trending).map(product => ({ ...product }));
+  async getTrending() {
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "images" } },
+          { field: { Name: "description" } },
+          { field: { Name: "priceTiers" } },
+          { field: { Name: "inStock" } },
+          { field: { Name: "stockCount" } },
+          { field: { Name: "featured" } },
+          { field: { Name: "trending" } },
+          { field: { Name: "dealId" } },
+          { field: { Name: "dietaryTags" } },
+          { field: { Name: "frequentlyBoughtWith" } },
+          { field: { Name: "featuredOrder" } }
+        ],
+        where: [
+          {
+            FieldName: "trending",
+            Operator: "EqualTo",
+            Values: [true]
+          }
+        ],
+        orderBy: [{ fieldName: "Name", sorttype: "ASC" }]
+      };
+
+      const response = await this.apperClient.fetchRecords("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching trending products:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching trending products:", error.message);
+      }
+      throw error;
+    }
   }
 
   async getFrequentlyBoughtWith(productId, limit = 3) {
-    await this.delay(150);
-    const product = productsData.find(p => p.Id === parseInt(productId));
-    if (!product || !product.frequentlyBoughtWith) {
+    try {
+      // First get the current product to get its frequentlyBoughtWith list
+      const currentProduct = await this.getById(productId);
+      if (!currentProduct || !currentProduct.frequentlyBoughtWith) {
+        return [];
+      }
+
+      // Parse the frequentlyBoughtWith field (should be a string like "2,6,12")
+      let productIds = [];
+      if (typeof currentProduct.frequentlyBoughtWith === 'string') {
+        productIds = currentProduct.frequentlyBoughtWith.split(',').map(id => parseInt(id.trim()));
+      } else if (Array.isArray(currentProduct.frequentlyBoughtWith)) {
+        productIds = currentProduct.frequentlyBoughtWith.map(id => parseInt(id));
+      }
+
+      if (productIds.length === 0) return [];
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "images" } },
+          { field: { Name: "description" } },
+          { field: { Name: "priceTiers" } },
+          { field: { Name: "inStock" } },
+          { field: { Name: "stockCount" } },
+          { field: { Name: "featured" } },
+          { field: { Name: "trending" } },
+          { field: { Name: "dealId" } },
+          { field: { Name: "dietaryTags" } },
+          { field: { Name: "frequentlyBoughtWith" } },
+          { field: { Name: "featuredOrder" } }
+        ],
+        where: [
+          {
+            FieldName: "Id",
+            Operator: "ExactMatch",
+            Values: productIds
+          }
+        ],
+        pagingInfo: { limit: limit, offset: 0 }
+      };
+
+      const response = await this.apperClient.fetchRecords("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching frequently bought with products:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching frequently bought with products:", error.message);
+      }
       return [];
     }
-    
-    return productsData
-      .filter(p => product.frequentlyBoughtWith.includes(p.Id))
-      .slice(0, limit)
-      .map(product => ({ ...product }));
   }
 
   async updateStock(id, quantity) {
-    await this.delay(100);
-    const index = productsData.findIndex(p => p.Id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Product not found");
+    try {
+      // First get current product to calculate new stock
+      const currentProduct = await this.getById(id);
+      if (!currentProduct) {
+        throw new Error("Product not found");
+      }
+
+      const newStockCount = Math.max(0, (currentProduct.stockCount || 0) - quantity);
+      const newInStock = newStockCount > 0;
+
+      const params = {
+        records: [
+          {
+            Id: parseInt(id),
+            stockCount: newStockCount,
+            inStock: newInStock
+          }
+        ]
+      };
+
+      const response = await this.apperClient.updateRecord("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results && response.results.length > 0) {
+        const result = response.results[0];
+        if (!result.success) {
+          throw new Error(result.message || "Failed to update stock");
+        }
+        return result.data;
+      }
+
+      return { ...currentProduct, stockCount: newStockCount, inStock: newInStock };
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating stock:", error?.response?.data?.message);
+      } else {
+        console.error("Error updating stock:", error.message);
+      }
+      throw error;
     }
-    
-    productsData[index].stockCount = Math.max(0, productsData[index].stockCount - quantity);
-    productsData[index].inStock = productsData[index].stockCount > 0;
-    return { ...productsData[index] };
   }
 
   async create(product) {
-    await this.delay(300);
-    const newProduct = {
-      ...product,
-      Id: Math.max(...productsData.map(p => p.Id)) + 1,
-      inStock: true,
-      stockCount: product.stockCount || 50,
-      trending: product.trending || false,
-      featured: product.featured || false,
-      featuredOrder: product.featured ? (Math.max(...productsData.filter(p => p.featured).map(p => p.featuredOrder || 0)) + 1) : null,
-      dealId: null,
-      frequentlyBoughtWith: product.frequentlyBoughtWith || []
-    };
-    productsData.push(newProduct);
-    return { ...newProduct };
+    try {
+      // Only include updateable fields
+      const productData = {
+        Name: product.Name || product.name,
+        Tags: product.Tags || "",
+        category: product.category,
+        images: Array.isArray(product.images) ? product.images.join(',') : product.images,
+        description: product.description,
+        priceTiers: typeof product.priceTiers === 'object' ? JSON.stringify(product.priceTiers) : product.priceTiers,
+        inStock: product.inStock !== undefined ? product.inStock : true,
+        stockCount: product.stockCount || 50,
+        featured: product.featured || false,
+        trending: product.trending || false,
+        dealId: product.dealId || "",
+        dietaryTags: Array.isArray(product.dietaryTags) ? product.dietaryTags.join(',') : (product.dietaryTags || ""),
+        frequentlyBoughtWith: Array.isArray(product.frequentlyBoughtWith) ? product.frequentlyBoughtWith.join(',') : (product.frequentlyBoughtWith || ""),
+        featuredOrder: product.featuredOrder || null
+      };
+
+      const params = {
+        records: [productData]
+      };
+
+      const response = await this.apperClient.createRecord("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create products ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              console.error(`${error.fieldLabel}: ${error.message}`);
+            });
+          });
+        }
+        
+        if (successfulRecords.length > 0) {
+          return successfulRecords[0].data;
+        } else {
+          throw new Error("Failed to create product");
+        }
+      }
+
+      throw new Error("No response data received");
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating product:", error?.response?.data?.message);
+      } else {
+        console.error("Error creating product:", error.message);
+      }
+      throw error;
+    }
   }
 
   async update(id, updates) {
-    await this.delay(250);
-    const index = productsData.findIndex(p => p.Id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Product not found");
+    try {
+      // Only include updateable fields
+      const updateData = { Id: parseInt(id) };
+      
+      if (updates.Name !== undefined) updateData.Name = updates.Name;
+      if (updates.Tags !== undefined) updateData.Tags = updates.Tags;
+      if (updates.category !== undefined) updateData.category = updates.category;
+      if (updates.images !== undefined) updateData.images = Array.isArray(updates.images) ? updates.images.join(',') : updates.images;
+      if (updates.description !== undefined) updateData.description = updates.description;
+      if (updates.priceTiers !== undefined) updateData.priceTiers = typeof updates.priceTiers === 'object' ? JSON.stringify(updates.priceTiers) : updates.priceTiers;
+      if (updates.inStock !== undefined) updateData.inStock = updates.inStock;
+      if (updates.stockCount !== undefined) updateData.stockCount = updates.stockCount;
+      if (updates.featured !== undefined) updateData.featured = updates.featured;
+      if (updates.trending !== undefined) updateData.trending = updates.trending;
+      if (updates.dealId !== undefined) updateData.dealId = updates.dealId;
+      if (updates.dietaryTags !== undefined) updateData.dietaryTags = Array.isArray(updates.dietaryTags) ? updates.dietaryTags.join(',') : updates.dietaryTags;
+      if (updates.frequentlyBoughtWith !== undefined) updateData.frequentlyBoughtWith = Array.isArray(updates.frequentlyBoughtWith) ? updates.frequentlyBoughtWith.join(',') : updates.frequentlyBoughtWith;
+      if (updates.featuredOrder !== undefined) updateData.featuredOrder = updates.featuredOrder;
+
+      const params = {
+        records: [updateData]
+      };
+
+      const response = await this.apperClient.updateRecord("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update products ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              console.error(`${error.fieldLabel}: ${error.message}`);
+            });
+          });
+        }
+        
+        if (successfulUpdates.length > 0) {
+          return successfulUpdates[0].data;
+        } else {
+          throw new Error("Failed to update product");
+        }
+      }
+
+      throw new Error("No response data received");
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating product:", error?.response?.data?.message);
+      } else {
+        console.error("Error updating product:", error.message);
+      }
+      throw error;
     }
-    
-    productsData[index] = { ...productsData[index], ...updates };
-    return { ...productsData[index] };
   }
 
   async delete(id) {
-    await this.delay(200);
-    const index = productsData.findIndex(p => p.Id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Product not found");
-    }
-    
-    const deleted = productsData.splice(index, 1)[0];
-    return { ...deleted };
-  }
+    try {
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
 
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+      const response = await this.apperClient.deleteRecord("product", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+        
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete products ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+          
+          failedDeletions.forEach(record => {
+            if (record.message) console.error(record.message);
+          });
+        }
+        
+        return successfulDeletions.length > 0;
+      }
+
+      return true;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting product:", error?.response?.data?.message);
+      } else {
+        console.error("Error deleting product:", error.message);
+      }
+      throw error;
+    }
   }
 }
+
+const productService = new ProductService();
+export default productService;
 
 export default new ProductService();

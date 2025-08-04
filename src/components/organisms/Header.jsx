@@ -1,6 +1,8 @@
-import { useState } from "react";
+import React, { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { AuthContext } from "../../App";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import Button from "@/components/atoms/Button";
@@ -11,11 +13,17 @@ const Header = () => {
   const { getCartItemCount } = useCart();
   const navigate = useNavigate();
   const cartItemCount = getCartItemCount();
+  const { logout } = useContext(AuthContext);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
 
   const handleSearch = (query) => {
     if (query.trim()) {
       navigate(`/search?q=${encodeURIComponent(query)}`);
     }
+  };
+
+  const handleLogout = async () => {
+    await logout();
   };
 
   const navItems = [
@@ -92,6 +100,25 @@ const Header = () => {
               )}
             </Button>
 
+            {/* User Menu & Logout */}
+            {isAuthenticated && (
+              <div className="flex items-center space-x-2">
+                {user && (
+                  <span className="hidden sm:block text-sm text-gray-600">
+                    Hi, {user.firstName || user.name || 'User'}
+                  </span>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="p-2"
+                >
+                  <ApperIcon name="LogOut" className="h-5 w-5" />
+                </Button>
+              </div>
+            )}
+
             {/* Mobile Menu Button */}
             <Button
               variant="ghost"
@@ -131,6 +158,17 @@ const Header = () => {
                     <span className="font-medium">{item.name}</span>
                   </Link>
                 ))}
+
+                {/* Mobile Logout */}
+                {isAuthenticated && (
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-3 px-4 py-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors w-full text-left"
+                  >
+                    <ApperIcon name="LogOut" className="h-5 w-5" />
+                    <span className="font-medium">Logout</span>
+                  </button>
+                )}
               </nav>
             </div>
           </motion.div>

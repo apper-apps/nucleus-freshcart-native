@@ -1,259 +1,180 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import ApperIcon from '@/components/ApperIcon';
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import ApperIcon from "@/components/ApperIcon";
 
-const Product360Viewer = ({ images, productName, className = "" }) => {
-  const [currentFrame, setCurrentFrame] = useState(0);
+const Product360Viewer = ({ images = [], productName = "", className = "" }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadedImages, setLoadedImages] = useState(0);
-  const [isRotating, setIsRotating] = useState(false);
+  const [showHint, setShowHint] = useState(true);
   const containerRef = useRef(null);
-  const startFrameRef = useRef(0);
 
-  const totalFrames = images?.length || 1;
-  const is360Mode = totalFrames > 1;
-
-  // Preload images
-  useEffect(() => {
-    if (!images || images.length === 0) {
-      setIsLoading(false);
-      return;
+  // Parse images if it's a string
+  const parsedImages = (() => {
+    if (typeof images === 'string') {
+      try {
+        return images.split(',').map(img => img.trim()).filter(img => img);
+      } catch (e) {
+        return [images];
+      }
     }
+    return Array.isArray(images) ? images : [];
+  })();
 
-    setIsLoading(true);
-    setLoadedImages(0);
-
-    const imagePromises = images.map((src) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          setLoadedImages(prev => prev + 1);
-          resolve(img);
-        };
-        img.onerror = reject;
-        img.src = src;
-      });
-    });
-
-    Promise.all(imagePromises)
-      .then(() => setIsLoading(false))
-      .catch(() => setIsLoading(false));
-  }, [images]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowHint(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleMouseDown = (e) => {
-    if (!is360Mode) return;
+    if (parsedImages.length <= 1) return;
     setIsDragging(true);
     setDragStart(e.clientX);
-    startFrameRef.current = currentFrame;
-    e.preventDefault();
-  };
-
-  const handleTouchStart = (e) => {
-    if (!is360Mode) return;
-    setIsDragging(true);
-    setDragStart(e.touches[0].clientX);
-    startFrameRef.current = currentFrame;
-    e.preventDefault();
+    setShowHint(false);
   };
 
   const handleMouseMove = (e) => {
-    if (!isDragging || !is360Mode) return;
+    if (!isDragging || parsedImages.length <= 1) return;
     
-    const deltaX = e.clientX - dragStart;
-    const sensitivity = 2; // Adjust rotation sensitivity
-    const frameChange = Math.floor(deltaX / sensitivity);
-    const newFrame = (startFrameRef.current + frameChange) % totalFrames;
+    const diff = e.clientX - dragStart;
+    const sensitivity = 10;
     
-    setCurrentFrame(newFrame < 0 ? totalFrames + newFrame : newFrame);
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging || !is360Mode) return;
-    
-    const deltaX = e.touches[0].clientX - dragStart;
-    const sensitivity = 2;
-    const frameChange = Math.floor(deltaX / sensitivity);
-    const newFrame = (startFrameRef.current + frameChange) % totalFrames;
-    
-    setCurrentFrame(newFrame < 0 ? totalFrames + newFrame : newFrame);
-    e.preventDefault();
+    if (Math.abs(diff) > sensitivity) {
+      const direction = diff > 0 ? -1 : 1;
+      const newIndex = (currentImageIndex + direction + parsedImages.length) % parsedImages.length;
+      setCurrentImageIndex(newIndex);
+      setDragStart(e.clientX);
+    }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
   };
 
+  const handleTouchStart = (e) => {
+    if (parsedImages.length <= 1) return;
+    setIsDragging(true);
+    setDragStart(e.touches[0].clientX);
+    setShowHint(false);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || parsedImages.length <= 1) return;
+    
+    const diff = e.touches[0].clientX - dragStart;
+    const sensitivity = 15;
+    
+    if (Math.abs(diff) > sensitivity) {
+      const direction = diff > 0 ? -1 : 1;
+      const newIndex = (currentImageIndex + direction + parsedImages.length) % parsedImages.length;
+      setCurrentImageIndex(newIndex);
+      setDragStart(e.touches[0].clientX);
+    }
+  };
+
   const handleTouchEnd = () => {
     setIsDragging(false);
   };
 
-  const autoRotate = () => {
-    if (!is360Mode || isRotating) return;
-    
-    setIsRotating(true);
-    let frame = 0;
-    const interval = setInterval(() => {
-      frame = (frame + 1) % totalFrames;
-      setCurrentFrame(frame);
-      
-      if (frame === 0) {
-        clearInterval(interval);
-        setIsRotating(false);
-      }
-    }, 100);
-  };
-
-  // Global mouse/touch event listeners
-  useEffect(() => {
-    const handleGlobalMouseMove = (e) => handleMouseMove(e);
-    const handleGlobalMouseUp = () => handleMouseUp();
-    const handleGlobalTouchMove = (e) => handleTouchMove(e);
-    const handleGlobalTouchEnd = () => handleTouchEnd();
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-      document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
-      document.addEventListener('touchend', handleGlobalTouchEnd);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove);
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
-      document.removeEventListener('touchmove', handleGlobalTouchMove);
-      document.removeEventListener('touchend', handleGlobalTouchEnd);
-    };
-  }, [isDragging, dragStart, currentFrame]);
-
-  if (!images || images.length === 0) {
+  if (parsedImages.length === 0) {
     return (
-      <div className={`aspect-square bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center ${className}`}>
-        <img
-          src="/placeholder-product.jpg"
-          alt={productName}
-          className="w-full h-full object-cover"
-        />
+      <div className={`aspect-square bg-gray-100 rounded-xl flex items-center justify-center ${className}`}>
+        <div className="text-center text-gray-400">
+          <ApperIcon name="Image" className="h-16 w-16 mx-auto mb-2" />
+          <p className="text-sm">No image available</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={`relative ${className}`}>
-      {/* Main Image Container */}
-      <div 
+    <div className={`product-360-viewer relative select-none ${className}`}>
+      <div
         ref={containerRef}
-        className={`aspect-square bg-gray-100 rounded-xl overflow-hidden relative ${
-          is360Mode ? 'cursor-grab' : 'cursor-default'
-        } ${isDragging ? 'cursor-grabbing' : ''}`}
+        className="aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-grab active:cursor-grabbing"
         onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
-        {isLoading ? (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="text-center">
-              <ApperIcon name="Loader2" className="h-8 w-8 animate-spin text-primary-500 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">
-                Loading {loadedImages}/{totalFrames} images...
-              </p>
-            </div>
-          </div>
-        ) : (
-          <motion.img
-            key={currentFrame}
-            src={images[currentFrame]}
-            alt={`${productName} - View ${currentFrame + 1}`}
-            className="w-full h-full object-cover select-none"
-            draggable={false}
-            initial={{ opacity: 0.8 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.1 }}
-          />
-        )}
+        <img
+          src={parsedImages[currentImageIndex] || "/placeholder-product.jpg"}
+          alt={`${productName} - View ${currentImageIndex + 1}`}
+          className="w-full h-full object-cover transition-opacity duration-100"
+          draggable={false}
+        />
 
-        {/* 360° Indicator */}
-        {is360Mode && !isLoading && (
-          <div className="absolute top-4 left-4">
-            <div className="bg-black/70 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
-              <ApperIcon name="RotateCw" className="h-3 w-3" />
-              <span>360°</span>
-            </div>
-          </div>
-        )}
-
-        {/* Rotation Progress */}
-        {is360Mode && !isLoading && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-            <div className="bg-black/70 rounded-full px-3 py-1">
-              <div className="flex space-x-1">
-                {Array.from({ length: Math.min(totalFrames, 12) }, (_, i) => {
-                  const frameIndex = Math.floor((i / 12) * totalFrames);
-                  const isActive = Math.abs(currentFrame - frameIndex) <= 1 || 
-                    (currentFrame === 0 && frameIndex === totalFrames - 1) ||
-                    (currentFrame === totalFrames - 1 && frameIndex === 0);
-                  return (
-                    <div
-                      key={i}
-                      className={`w-1 h-1 rounded-full transition-colors ${
-                        isActive ? 'bg-white' : 'bg-white/30'
-                      }`}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Auto-rotate button */}
-        {is360Mode && !isLoading && !isRotating && (
-          <button
-            onClick={autoRotate}
-            className="absolute top-4 right-4 bg-black/70 text-white p-2 rounded-full hover:bg-black/80 transition-colors"
-            title="Auto rotate"
-          >
-            <ApperIcon name="Play" className="h-4 w-4" />
-          </button>
-        )}
-
-        {/* Drag hint */}
-        {is360Mode && !isLoading && !isDragging && currentFrame === 0 && (
+        {/* Drag Hint */}
+        {showHint && parsedImages.length > 1 && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ delay: 1, duration: 0.5 }}
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            className="product-360-drag-hint"
           >
-            <div className="bg-black/70 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2">
-              <ApperIcon name="MousePointer2" className="h-4 w-4" />
-              <span>Drag to rotate</span>
+            <div className="text-center text-white">
+              <motion.div
+                animate={{ x: [-10, 10, -10] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="flex items-center justify-center space-x-2 mb-2"
+              >
+                <ApperIcon name="MousePointer" className="h-6 w-6" />
+                <span className="text-sm font-medium">Drag to rotate</span>
+              </motion.div>
+              <div className="text-xs opacity-75">{parsedImages.length} views available</div>
             </div>
           </motion.div>
         )}
+
+        {/* Controls */}
+        {parsedImages.length > 1 && (
+          <div className="product-360-controls">
+            <div className="product-360-progress">
+              {parsedImages.map((_, index) => (
+                <div
+                  key={index}
+                  className={`product-360-dot ${
+                    index === currentImageIndex ? 'active' : 'inactive'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Thumbnail Navigation */}
-      {is360Mode && images.length > 1 && (
-        <div className="mt-4 flex space-x-2 overflow-x-auto pb-2">
-          {images.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentFrame(index)}
-              className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                currentFrame === index
-                  ? "border-primary-500"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <img
-                src={image}
-                alt={`${productName} ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </button>
-          ))}
+      {/* Navigation Arrows */}
+      {parsedImages.length > 1 && (
+        <>
+          <button
+            onClick={() => setCurrentImageIndex((prev) => 
+              (prev - 1 + parsedImages.length) % parsedImages.length
+            )}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-black/70 transition-colors"
+          >
+            <ApperIcon name="ChevronLeft" className="h-4 w-4" />
+          </button>
+          
+          <button
+            onClick={() => setCurrentImageIndex((prev) => 
+              (prev + 1) % parsedImages.length
+            )}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-black/70 transition-colors"
+          >
+            <ApperIcon name="ChevronRight" className="h-4 w-4" />
+          </button>
+        </>
+      )}
+
+      {/* Image Counter */}
+      {parsedImages.length > 1 && (
+        <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+          {currentImageIndex + 1} / {parsedImages.length}
         </div>
       )}
     </div>

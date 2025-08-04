@@ -1,65 +1,282 @@
-import dealsData from "@/services/mockData/deals.json";
-import productsData from "@/services/mockData/products.json";
-
 class DealService {
+  constructor() {
+    const { ApperClient } = window.ApperSDK;
+    this.apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+  }
+
   async getAll() {
-    await this.delay(300);
-    return dealsData.map(deal => ({
-      ...deal,
-      products: this.enhanceProductsWithTieredPricing(
-        productsData.filter(p => deal.productIds.includes(p.Id))
-      )
-    }));
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "title" } },
+          { field: { Name: "productIds" } },
+          { field: { Name: "expiresAt" } },
+          { field: { Name: "position" } }
+        ],
+        orderBy: [{ fieldName: "position", sorttype: "ASC" }]
+      };
+
+      const response = await this.apperClient.fetchRecords("deal", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      const deals = response.data || [];
+      
+      // Enhance deals with product data
+      const enhancedDeals = await Promise.all(
+        deals.map(async (deal) => {
+          const products = await this.getProductsForDeal(deal.productIds);
+          return {
+            ...deal,
+            products: this.enhanceProductsWithTieredPricing(products)
+          };
+        })
+      );
+
+      return enhancedDeals;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching deals:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching deals:", error.message);
+      }
+      throw error;
+    }
   }
 
   async getById(id) {
-    await this.delay(200);
-    const deal = dealsData.find(d => d.Id === parseInt(id));
-    if (!deal) {
-      throw new Error("Deal not found");
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "title" } },
+          { field: { Name: "productIds" } },
+          { field: { Name: "expiresAt" } },
+          { field: { Name: "position" } }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById("deal", parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      const deal = response.data;
+      if (!deal) {
+        throw new Error("Deal not found");
+      }
+
+      // Enhance deal with product data
+      const products = await this.getProductsForDeal(deal.productIds);
+      
+      return {
+        ...deal,
+        products: this.enhanceProductsWithTieredPricing(products)
+      };
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching deal with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(`Error fetching deal with ID ${id}:`, error.message);
+      }
+      throw error;
     }
-    
-    return {
-      ...deal,
-      products: this.enhanceProductsWithTieredPricing(
-        productsData.filter(p => deal.productIds.includes(p.Id))
-      )
-    };
   }
 
   async getActive() {
-    await this.delay(250);
-    const now = new Date();
-    return dealsData
-      .filter(deal => new Date(deal.expiresAt) > now)
-      .sort((a, b) => a.position - b.position)
-      .map(deal => ({
-        ...deal,
-        products: this.enhanceProductsWithTieredPricing(
-          productsData.filter(p => deal.productIds.includes(p.Id))
-        )
-      }));
+    try {
+      const now = new Date().toISOString();
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "title" } },
+          { field: { Name: "productIds" } },
+          { field: { Name: "expiresAt" } },
+          { field: { Name: "position" } }
+        ],
+        where: [
+          {
+            FieldName: "expiresAt",
+            Operator: "GreaterThan",
+            Values: [now]
+          }
+        ],
+        orderBy: [{ fieldName: "position", sorttype: "ASC" }]
+      };
+
+      const response = await this.apperClient.fetchRecords("deal", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      const deals = response.data || [];
+      
+      // Enhance deals with product data
+      const enhancedDeals = await Promise.all(
+        deals.map(async (deal) => {
+          const products = await this.getProductsForDeal(deal.productIds);
+          return {
+            ...deal,
+            products: this.enhanceProductsWithTieredPricing(products)
+          };
+        })
+      );
+
+      return enhancedDeals;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching active deals:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching active deals:", error.message);
+      }
+      throw error;
+    }
   }
 
   async getHotDeals() {
-    await this.delay(200);
-    const now = new Date();
-    const hotDeals = dealsData
-      .filter(deal => {
-        const expiresAt = new Date(deal.expiresAt);
-        const hoursUntilExpiry = (expiresAt - now) / (1000 * 60 * 60);
-        return hoursUntilExpiry <= 24 && hoursUntilExpiry > 0;
-      })
-      .sort((a, b) => new Date(a.expiresAt) - new Date(b.expiresAt))
-      .map(deal => ({
-        ...deal,
-        products: this.enhanceProductsWithTieredPricing(
-          productsData.filter(p => deal.productIds.includes(p.Id))
-        ),
-        urgency: this.calculateUrgency(deal.expiresAt)
-      }));
-    
-    return hotDeals;
+    try {
+      const now = new Date();
+      const twentyFourHoursFromNow = new Date(now.getTime() + (24 * 60 * 60 * 1000)).toISOString();
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "title" } },
+          { field: { Name: "productIds" } },
+          { field: { Name: "expiresAt" } },
+          { field: { Name: "position" } }
+        ],
+        whereGroups: [{
+          operator: "AND",
+          subGroups: [
+            {
+              conditions: [
+                { fieldName: "expiresAt", operator: "GreaterThan", values: [now.toISOString()] }
+              ],
+              operator: "AND"
+            },
+            {
+              conditions: [
+                { fieldName: "expiresAt", operator: "LessThanOrEqualTo", values: [twentyFourHoursFromNow] }
+              ],
+              operator: "AND"
+            }
+          ]
+        }],
+        orderBy: [{ fieldName: "expiresAt", sorttype: "ASC" }]
+      };
+
+      const response = await this.apperClient.fetchRecords("deal", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      const deals = response.data || [];
+      
+      // Enhance deals with product data and urgency
+      const enhancedDeals = await Promise.all(
+        deals.map(async (deal) => {
+          const products = await this.getProductsForDeal(deal.productIds);
+          return {
+            ...deal,
+            products: this.enhanceProductsWithTieredPricing(products),
+            urgency: this.calculateUrgency(deal.expiresAt)
+          };
+        })
+      );
+
+      return enhancedDeals;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching hot deals:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching hot deals:", error.message);
+      }
+      throw error;
+    }
+  }
+
+  async getProductsForDeal(productIds) {
+    try {
+      if (!productIds) return [];
+      
+      // Parse productIds string to array
+      let ids = [];
+      if (typeof productIds === 'string') {
+        ids = productIds.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+      } else if (Array.isArray(productIds)) {
+        ids = productIds.map(id => parseInt(id)).filter(id => !isNaN(id));
+      }
+
+      if (ids.length === 0) return [];
+
+      const { ApperClient } = window.ApperSDK;
+      const productClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "images" } },
+          { field: { Name: "description" } },
+          { field: { Name: "priceTiers" } },
+          { field: { Name: "inStock" } },
+          { field: { Name: "stockCount" } },
+          { field: { Name: "featured" } },
+          { field: { Name: "trending" } },
+          { field: { Name: "dealId" } },
+          { field: { Name: "dietaryTags" } },
+          { field: { Name: "frequentlyBoughtWith" } },
+          { field: { Name: "featuredOrder" } }
+        ],
+        where: [
+          {
+            FieldName: "Id",
+            Operator: "ExactMatch",
+            Values: ids
+          }
+        ]
+      };
+
+      const response = await productClient.fetchRecords("product", params);
+      
+      if (!response.success) {
+        console.error("Error fetching products for deal:", response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching products for deal:", error.message);
+      return [];
+    }
   }
 
   enhanceProductsWithTieredPricing(products) {
@@ -74,7 +291,18 @@ class DealService {
   calculateDynamicPricing(product) {
     if (!product.priceTiers) return null;
     
-    return product.priceTiers.map(tier => ({
+    let priceTiers = [];
+    if (typeof product.priceTiers === 'string') {
+      try {
+        priceTiers = JSON.parse(product.priceTiers);
+      } catch (e) {
+        return null;
+      }
+    } else if (Array.isArray(product.priceTiers)) {
+      priceTiers = product.priceTiers;
+    }
+    
+    return priceTiers.map(tier => ({
       ...tier,
       savings: tier.discountPercentage > 0 ? 
         Math.round(tier.price / (1 - tier.discountPercentage / 100)) - tier.price : 0,
@@ -84,7 +312,11 @@ class DealService {
   }
 
   calculateStockLevel(product) {
-    // Mock stock calculation with some logic
+    // Use actual stock count if available, otherwise mock calculation
+    if (product.stockCount !== undefined) {
+      return product.stockCount;
+    }
+    
     const baseStock = Math.floor(Math.random() * 50) + 10;
     const demandFactor = product.featured ? 0.7 : 1.0;
     return Math.max(1, Math.floor(baseStock * demandFactor));
@@ -93,8 +325,30 @@ class DealService {
   calculateRecommendationScore(product) {
     let score = 0;
     if (product.featured) score += 30;
-    if (product.priceTiers?.some(tier => tier.discountPercentage > 20)) score += 25;
-    if (product.dietaryTags?.includes('Organic')) score += 15;
+    
+    // Parse priceTiers to check for discounts
+    let priceTiers = [];
+    if (typeof product.priceTiers === 'string') {
+      try {
+        priceTiers = JSON.parse(product.priceTiers);
+      } catch (e) {
+        priceTiers = [];
+      }
+    } else if (Array.isArray(product.priceTiers)) {
+      priceTiers = product.priceTiers;
+    }
+    
+    if (priceTiers.some && priceTiers.some(tier => tier.discountPercentage > 20)) score += 25;
+    
+    // Parse dietaryTags
+    let dietaryTags = [];
+    if (typeof product.dietaryTags === 'string') {
+      dietaryTags = product.dietaryTags.split(',').map(tag => tag.trim());
+    } else if (Array.isArray(product.dietaryTags)) {
+      dietaryTags = product.dietaryTags;
+    }
+    
+    if (dietaryTags.includes && dietaryTags.includes('Organic')) score += 15;
     if (product.inStock) score += 20;
     return Math.min(100, score + Math.floor(Math.random() * 10));
   }
@@ -111,41 +365,155 @@ class DealService {
   }
 
   async create(deal) {
-    await this.delay(300);
-    const newDeal = {
-      ...deal,
-      Id: Math.max(...dealsData.map(d => d.Id)) + 1,
-      position: dealsData.length + 1
-    };
-    dealsData.push(newDeal);
-    return { ...newDeal };
+    try {
+      // Only include updateable fields
+      const dealData = {
+        Name: deal.Name || deal.title,
+        Tags: deal.Tags || "",
+        title: deal.title,
+        productIds: Array.isArray(deal.productIds) ? deal.productIds.join(',') : deal.productIds,
+        expiresAt: deal.expiresAt,
+        position: deal.position || 1
+      };
+
+      const params = {
+        records: [dealData]
+      };
+
+      const response = await this.apperClient.createRecord("deal", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create deals ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              console.error(`${error.fieldLabel}: ${error.message}`);
+            });
+          });
+        }
+        
+        if (successfulRecords.length > 0) {
+          return successfulRecords[0].data;
+        } else {
+          throw new Error("Failed to create deal");
+        }
+      }
+
+      throw new Error("No response data received");
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating deal:", error?.response?.data?.message);
+      } else {
+        console.error("Error creating deal:", error.message);
+      }
+      throw error;
+    }
   }
 
   async update(id, updates) {
-    await this.delay(250);
-    const index = dealsData.findIndex(d => d.Id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Deal not found");
+    try {
+      // Only include updateable fields
+      const updateData = { Id: parseInt(id) };
+      
+      if (updates.Name !== undefined) updateData.Name = updates.Name;
+      if (updates.Tags !== undefined) updateData.Tags = updates.Tags;
+      if (updates.title !== undefined) updateData.title = updates.title;
+      if (updates.productIds !== undefined) updateData.productIds = Array.isArray(updates.productIds) ? updates.productIds.join(',') : updates.productIds;
+      if (updates.expiresAt !== undefined) updateData.expiresAt = updates.expiresAt;
+      if (updates.position !== undefined) updateData.position = updates.position;
+
+      const params = {
+        records: [updateData]
+      };
+
+      const response = await this.apperClient.updateRecord("deal", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update deals ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              console.error(`${error.fieldLabel}: ${error.message}`);
+            });
+          });
+        }
+        
+        if (successfulUpdates.length > 0) {
+          return successfulUpdates[0].data;
+        } else {
+          throw new Error("Failed to update deal");
+        }
+      }
+
+      throw new Error("No response data received");
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating deal:", error?.response?.data?.message);
+      } else {
+        console.error("Error updating deal:", error.message);
+      }
+      throw error;
     }
-    
-    dealsData[index] = { ...dealsData[index], ...updates };
-    return { ...dealsData[index] };
   }
 
   async delete(id) {
-    await this.delay(200);
-    const index = dealsData.findIndex(d => d.Id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Deal not found");
-    }
-    
-    const deleted = dealsData.splice(index, 1)[0];
-    return { ...deleted };
-  }
+    try {
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
 
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+      const response = await this.apperClient.deleteRecord("deal", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+        
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete deals ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+          
+          failedDeletions.forEach(record => {
+            if (record.message) console.error(record.message);
+          });
+        }
+        
+        return successfulDeletions.length > 0;
+      }
+
+      return true;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting deal:", error?.response?.data?.message);
+      } else {
+        console.error("Error deleting deal:", error.message);
+      }
+      throw error;
+    }
   }
 }
 
+const dealService = new DealService();
+export default dealService;
 export default new DealService();
