@@ -131,4 +131,3 @@ class CategoryService {
 
 const categoryService = new CategoryService();
 export default categoryService;
-export default new CategoryService();

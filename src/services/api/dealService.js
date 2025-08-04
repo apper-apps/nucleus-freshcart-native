@@ -516,4 +516,3 @@ class DealService {
 
 const dealService = new DealService();
 export default dealService;
-export default new DealService();

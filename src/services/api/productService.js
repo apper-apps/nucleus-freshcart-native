@@ -679,5 +679,3 @@ class ProductService {
 
 const productService = new ProductService();
 export default productService;
-
-export default new ProductService();
