@@ -222,11 +222,11 @@ className="font-bold text-gray-900 group-hover:text-primary-600 transition-color
                     >
                       +{safeDietaryTags.length - 3}
                     </Badge>
-                  )}
+)}
                 </motion.div>
               );
             })()}
-            )}
+            }
             {/* Action Button */}
             <motion.button
                 whileHover={{
