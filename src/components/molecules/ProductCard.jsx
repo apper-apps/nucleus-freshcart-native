@@ -182,37 +182,50 @@ className="font-bold text-gray-900 group-hover:text-primary-600 transition-color
             </div>
             
             {/* Dietary Tags */}
-            {product.dietaryTags && product.dietaryTags.length > 0 && (
-              <motion.div
-                className="flex flex-wrap gap-1 mb-3"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                {product.dietaryTags.slice(0, 3).map((tag, tagIndex) => (
-                  <motion.div
-                    key={tag}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1 * tagIndex }}
-                  >
-                    <Badge
-                      variant={getDietaryBadgeVariant(tag)}
-                      className="text-xs px-2 py-0.5 font-medium"
+{(() => {
+              // Safe parsing for dietaryTags - handles both comma-separated strings and arrays
+              const safeDietaryTags = (() => {
+                if (!product.dietaryTags) return [];
+                if (Array.isArray(product.dietaryTags)) return product.dietaryTags;
+                if (typeof product.dietaryTags === 'string') {
+                  return product.dietaryTags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+                }
+                return [];
+              })();
+              
+              return safeDietaryTags.length > 0 && (
+                <motion.div
+                  className="flex flex-wrap gap-1 mb-3"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  {safeDietaryTags.slice(0, 3).map((tag, tagIndex) => (
+                    <motion.div
+                      key={tag}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 * tagIndex }}
                     >
-                      {tag}
+                      <Badge
+                        variant={getDietaryBadgeVariant(tag)}
+                        className="text-xs px-2 py-0.5 font-medium"
+                      >
+                        {tag}
+                      </Badge>
+                    </motion.div>
+                  ))}
+                  {safeDietaryTags.length > 3 && (
+                    <Badge
+                      variant="secondary"
+                      className="text-xs px-2 py-0.5 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-600 border border-gray-200"
+                    >
+                      +{safeDietaryTags.length - 3}
                     </Badge>
-                  </motion.div>
-                ))}
-                {product.dietaryTags.length > 3 && (
-                  <Badge
-                    variant="secondary"
-                    className="text-xs px-2 py-0.5 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-600 border border-gray-200"
-                  >
-                    +{product.dietaryTags.length - 3}
-                  </Badge>
-                )}
-              </motion.div>
+                  )}
+                </motion.div>
+              );
+            })()}
             )}
             {/* Action Button */}
             <motion.button
