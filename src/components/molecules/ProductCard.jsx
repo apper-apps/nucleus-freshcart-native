@@ -136,8 +136,8 @@ className="font-bold text-gray-900 group-hover:text-primary-600 transition-color
                 </span>}
             </div>
             {/* Variant Selector */}
-            {product.priceTiers && product.priceTiers.length > 1 && <div className="variants flex space-x-2 mb-3">
-                {product.priceTiers.map((tier, index) => <button
+{safePriceTiers && safePriceTiers.length > 1 && <div className="variants flex space-x-2 mb-3">
+                {safePriceTiers.map((tier, index) => <button
                     key={index}
                     onClick={e => {
                         e.stopPropagation();
