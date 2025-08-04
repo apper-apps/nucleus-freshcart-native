@@ -19,13 +19,28 @@ const { addToCart } = useCart();
     e.stopPropagation();
     addToCart(product, 1);
   };
+// Safely parse priceTiers - handle both array and string formats
+  const getPriceTiers = (priceTiers) => {
+    if (!priceTiers) return [];
+    if (Array.isArray(priceTiers)) return priceTiers;
+    if (typeof priceTiers === 'string') {
+      try {
+        const parsed = JSON.parse(priceTiers);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
 
-const currentTier = product.priceTiers?.[selectedVariant] || product.priceTiers?.[0] || { price: 0, discountPercentage: 0 };
-  const basePrice = product.priceTiers?.[0]?.price || 0;
-  const hasDiscount = product.priceTiers?.some(tier => tier.discountPercentage > 0);
-  const maxDiscount = Math.max(...(product.priceTiers?.map(tier => tier.discountPercentage) || [0]));
+  const safePriceTiers = getPriceTiers(product.priceTiers);
+  const currentTier = safePriceTiers[selectedVariant] || safePriceTiers[0] || { price: 0, discountPercentage: 0 };
+  const basePrice = safePriceTiers[0]?.price || 0;
+  const hasDiscount = safePriceTiers.some(tier => tier.discountPercentage > 0);
+  const maxDiscount = Math.max(...(safePriceTiers.map(tier => tier.discountPercentage) || [0]));
   const originalPrice = currentTier.discountPercentage > 0 ? 
-Math.round(currentTier.price / (1 - currentTier.discountPercentage / 100)) : null;
+    Math.round(currentTier.price / (1 - currentTier.discountPercentage / 100)) : null;
   
   const stockLeft = product.stockCount || Math.floor(Math.random() * 20) + 5;
   const isLowStock = stockLeft <= 10;
